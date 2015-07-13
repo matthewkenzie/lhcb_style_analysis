@@ -57,6 +57,7 @@ void EventCounter::setStyle(TH1* h, bool is2d) {
   else {
     for ( int xbin=1; xbin<=h->GetNbinsX(); xbin++ ) {
       h->GetXaxis()->SetBinLabel(xbin, sortedNames[xbin-1].Data());
+      h->SetBinContent(xbin, nameToTypeMap[sortedNames[xbin-1]]);
     }
   }
 }

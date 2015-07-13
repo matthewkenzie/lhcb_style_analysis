@@ -9,6 +9,7 @@
 #include "OptParser.h"
 #include "Config.h"
 #include "InputFileOptions.h"
+#include "CreateBatchJob.h"
 
 #include "EventCounter.h"
 #include "Analyser.h"
@@ -48,6 +49,7 @@ class RunEngine {
 
     EventCounter eventCounter;
 
+    void createBatchJobs();
     void setupConfig();
     void setupEventCounter();
 

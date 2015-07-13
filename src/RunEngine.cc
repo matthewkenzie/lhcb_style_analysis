@@ -24,8 +24,15 @@ RunEngine::RunEngine(TString _name, int argc, char **argv):
   // Read the dat file
   cfg.readDatFile(arg.cfgFile);
 
+  // print config if needed
   if (arg.verbose || arg.debug || arg.usage) cfg.printConfig();
   if (arg.usage) exit(0);
+
+  // create batch jobs if needed
+  if (arg.batch) {
+    createBatchJobs();
+    exit(0);
+  }
 
   // setup config
   setupConfig();
@@ -37,6 +44,18 @@ RunEngine::RunEngine(TString _name, int argc, char **argv):
 RunEngine::~RunEngine(){
   timer.Stop();
   cout << "Took: "; timer.Print();
+}
+
+void RunEngine::createBatchJobs()
+{
+  
+  print("RunEngine::createBatchJobs()", "Creating batch jobs in path: "+arg.batchdir);
+  for ( vector<InputFileOptions>::iterator fOpt = cfg.config.begin(); fOpt != cfg.config.end(); fOpt++ ) {
+
+    CreateBatchJob c ( arg, *fOpt );
+    c.WriteAndSubmit();
+    
+  }
 }
 
 void RunEngine::setupConfig()
@@ -93,13 +112,13 @@ void RunEngine::run() {
 
   // loop over input files
   for ( int f=0; f<infilenames.size(); f++ ) {
-
-    boost::filesystem::path p(infilenames[f]);
-    if ( ! boost::filesystem::exists(p) ) error( "File not found found: "+infilenames[f] );
-
+  
+    // open file
     TFile *infile = TFile::Open(infilenames[f]);
+    if ( ! infile ) error( "File not found found: "+infilenames[f] );
+    
+    // load tree
     TTree *intree = (TTree*)infile->Get(intreenames[f]);
-
     if ( ! intree ) error("Tree: "+intreenames[f]+" not found in file: "+infilenames[f] );
 
     print("RunEngine::run()" , "Reading input tree: \'" + intreenames[f] + "\'");
@@ -210,7 +229,9 @@ void RunEngine::checkSetup() {
   boost::filesystem::path dir =  od.parent_path();
   if ( ! boost::filesystem::exists( dir ) ) {
     print( "", "Making directory: "+TString(dir.string()) );
-    boost::filesystem::create_directory( dir );
+    if ( dir.string() != "" ) {
+      boost::filesystem::create_directory( dir );
+    }
   }
 
 }

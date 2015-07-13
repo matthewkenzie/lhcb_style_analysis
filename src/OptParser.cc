@@ -21,12 +21,17 @@ OptParser::OptParser():
     ("usage,u",       bool_switch(&usage)->default_value(false),                        "Print config and exit")
     ("verbose,v",     bool_switch(&verbose)->default_value(false),                      "Run in verbose mode")
     ("debug,d",       bool_switch(&debug)->default_value(false),                        "Run in debug mode")
+    ("batch,b",       bool_switch(&batch)->default_value(false),                        "Run in batch mode")
+    ("batchdir,d",    value<string>(&batchdir)->default_value("batch"),                 "Batch jobs directory")
+    ("queue,q",       value<string>(&queue)->default_value(""),                         "Batch queue to submit to")
     ;
 }
 
 OptParser::~OptParser(){}
 
 void OptParser::parseOptions(int argc, char **argv) {
+
+  prog_name = string(argv[0]);
 
   store( parse_command_line( argc, argv, desc) , vm);
   notify(vm);

@@ -22,6 +22,11 @@ class OptParser {
     bool          verbose;
     bool          debug;
     bool          usage;
+    bool          batch;
+    std::string   batchdir;
+    std::string   queue;
+
+    std::string   prog_name;
 
   private:
 
