@@ -7,17 +7,21 @@ list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 find_package(ROOT REQUIRED COMPONENTS MathCore MathMore RIO Hist Tree RooFit RooFitCore TMVA RooStats)
 
 # Get Boost
-find_package(Boost REQUIRED COMPONENTS program_options system filesystem)
+IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
+  set(Boost_INCLUDE_DIR "/afs/cern.ch/sw/lcg/external/Boost/1.53.0_python2.7/x86_64-slc6-gcc47-opt/include/boost-1_53")
+  set(Boost_LIBRARY_DIR "/afs/cern.ch/sw/lcg/external/Boost/1.53.0_python2.7/x86_64-slc6-gcc47-opt/lib" )
+  set(ENV{BOOST_ROOT} /afs/cern.ch/sw/lcg/external/Boost/1.53.0_python2.7/x86_64-slc6-gcc47-opt)
+ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux") 
+
+set(Boost_USE_STATIC_LIBS        ON) # only find static libs
+set(Boost_USE_MULTITHREADED      ON)
+set(Boost_USE_STATIC_RUNTIME    OFF)
+
+find_package(Boost 1.53 REQUIRED COMPONENTS program_options system filesystem REQUIRED)
 
 include_directories("${PROJECT_SOURCE_DIR}/include")
 include_directories("${ROOT_INCLUDE_DIR}")
-include_directories("${Boost_INCLUDE_DIR}")
-
-#aux_source_directory(src SOURCES)
-#message( "Non recur" )
-#foreach( fil ${SOURCES} )
-  #message( ${fil} )
-#endforeach()
+include_directories("${Boost_INCLUDE_DIRS}")
 
 # get all the source files
 # message( "Full recur" )
@@ -27,9 +31,6 @@ foreach( fil ${RECUR_SOURCES} )
   #message( ${pat} )
   list( APPEND SOURCES ${pat} )
 endforeach()
-
-#message("Done")
-#message( ${ALL_SOURCES} )
 
 # Make the executables
 file( GLOB MAIN_SOURCES "${PROJECT_SOURCE_DIR}/main/*.cpp" )

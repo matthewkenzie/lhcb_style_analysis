@@ -5,6 +5,7 @@
 #include <set>
 #include <vector>
 #include <map>
+#include <algorithm>
 
 #include "TString.h"
 #include "TH1I.h"

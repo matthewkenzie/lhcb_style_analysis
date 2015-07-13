@@ -19,7 +19,7 @@ void Config::readDatFile(const std::string &datfile) {
 
   cfgDatFile = TMacro("config",datfile.c_str());
 
-  ifstream df(datfile);
+  ifstream df(datfile.c_str());
 
   print("Config::readDatFile()",Form("Reading file: %s",datfile.c_str()));
 
