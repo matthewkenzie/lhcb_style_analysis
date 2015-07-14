@@ -4,6 +4,7 @@
 #include "boost/filesystem.hpp"
 
 #include "TFile.h"
+#include "TMath.h"
 #include "TChain.h"
 #include "TTree.h"
 
@@ -142,13 +143,15 @@ void RunEngine::run() {
       v->year    = years[f];
 
       // print progress
-      if ( arg.batchmode ) {
-        if ( iEntry%1000==0 ) {
-          print("", Form("Entry %lu / %lu", iEntry, lEntry) );
-        }
-      }
-      else {
-        printProgressBar( iEntry, fEntry, lEntry );
+      int update_schedule = 1000; // will update 1000 times
+      int ndigits = int( TMath::Log10( double((lEntry-fEntry)/double( update_schedule )) ) )+1;
+      ndigits = ndigits > 0 ? ndigits : 1;
+      int nearest = int (TMath::Power( 10, ndigits-1 ) );
+      nearest = nearest > 0 ? nearest : 1;
+      int print  = iEntry%nearest;
+
+      if ( iEntry%nearest==0 ) {
+        printProgressBar( iEntry, fEntry, lEntry, false, arg.batchmode );
       }
 
       // analyse the event
@@ -171,7 +174,7 @@ void RunEngine::run() {
       }
     }
     infile->Close();
-    //printProgressBar(lEntry, fEntry, lEntry, true);
+    printProgressBar(lEntry, fEntry, lEntry, true, arg.batchmode);
 
   }
 
@@ -180,7 +183,6 @@ void RunEngine::run() {
     analysers[a]->Term();
   }
 
-  //printProgressBar(arg.lastEntry, true);
   eventCounter.printSummary();
 
   print("RunEngine::run()", Form("Saving outputfile: %s",outfile->GetName()) );
@@ -199,29 +201,34 @@ void RunEngine::run() {
 
 }
 
-void RunEngine::printProgressBar(Long64_t jentry, bool isDone) {
+void RunEngine::printProgressBar(Long64_t jentry, bool isDone, bool newLine) {
   printProgressBar(jentry, arg.firstEntry, arg.lastEntry, isDone);
 }
 
-void RunEngine::printProgressBar(Long64_t jentry, Long64_t fEntry, Long64_t lEntry, bool isDone) {
-	double percentage = 100.*double(jentry-fEntry)/double(lEntry-fEntry);
+void RunEngine::printProgressBar(Long64_t jentry, Long64_t fEntry, Long64_t lEntry, bool isDone, bool newLine) {
+	
+  double percentage = 100.*double(jentry-fEntry)/double(lEntry-fEntry);
 	TString prog = "[";
 	for (int i=0; i<=100; i+=2) {
-		if (percentage>(double(i)-0.001)) prog += "-";
-		else prog += " ";
+		if (percentage>(double(i)-0.001)) {
+      prog += "-";
+    }
+		else {
+      prog += " ";
+    }
 	}
 	prog += "]";
 
-	double time = timer.RealTime();
-	timer.Continue();
-	double timeperevent = time/double(jentry-fEntry);
-	double esttimeleft = timeperevent*double(lEntry-jentry);
+  double time = timer.RealTime();
+  timer.Continue();
+  double timeperevent = time/double(jentry-fEntry);
+  double esttimeleft = timeperevent*double(lEntry-jentry);
 
-	if (isDone) percentage = 100.;
-	TString summary = Form("%5.1f%% -- %6d/%-6d -- %8.2f ms/ev -- %10.0f secs left",percentage,int(jentry-fEntry),int(lEntry-fEntry),timeperevent*1000.,esttimeleft);
+  if (isDone) percentage = 100.;
+  TString summary = Form("%5.1f%% -- %6d/%-6d -- %8.2f ms/ev -- %10.0f secs left",percentage,int(jentry-fEntry),int(lEntry-fEntry),timeperevent*1000.,esttimeleft);
 
   cout << Form("%-30s","Progress:") << prog << " " << summary;
-  if (isDone ) cout << endl;
+  if (newLine) cout << endl;
   else cout << "\r" << flush;
 }
 

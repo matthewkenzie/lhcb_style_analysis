@@ -53,8 +53,8 @@ class RunEngine {
     void setupConfig();
     void setupEventCounter();
 
-    void printProgressBar(Long64_t jentry, bool isDone=false);
-    void printProgressBar(Long64_t jentry, Long64_t fEntry, Long64_t lEntry, bool isDone=false);
+    void printProgressBar(Long64_t jentry, bool isDone=false, bool newLine=false);
+    void printProgressBar(Long64_t jentry, Long64_t fEntry, Long64_t lEntry, bool isDone=false, bool newLine=false);
     void checkSetup();
 
     bool isVariablesSet;
