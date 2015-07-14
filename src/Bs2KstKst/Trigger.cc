@@ -38,11 +38,6 @@ bool Bs2KstKst::Trigger::AnalyseEvent() {
        ! v->B_s0_Hlt2TopoMu4BodyBBDTDecision_TOS 			&&
        ! v->B_s0_Hlt2TopoOSTF4BodyDecision_TOS   					) return false;
 
-  TLorentzVector B_s0_p4;
-  B_s0_p4.SetXYZM( v->B_s0_PX, v->B_s0_PY, v->B_s0_PZ, v->B_s0_M );
-
-  v->B_s0_ETA = B_s0_p4.Eta();
-
   passedEvents++;
   return true;
 }
