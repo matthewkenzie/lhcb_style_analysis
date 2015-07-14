@@ -21,9 +21,11 @@ OptParser::OptParser():
     ("usage,u",       bool_switch(&usage)->default_value(false),                        "Print config and exit")
     ("verbose,v",     bool_switch(&verbose)->default_value(false),                      "Run in verbose mode")
     ("debug,d",       bool_switch(&debug)->default_value(false),                        "Run in debug mode")
-    ("batch,b",       bool_switch(&batch)->default_value(false),                        "Run in batch mode")
+    ("batchmode,b",   bool_switch(&batchmode)->default_value(false),                    "Run in batch mode")
+    ("batchjobs,j",   bool_switch(&batchjobs)->default_value(false),                    "Create batch jobs")
     ("batchdir,d",    value<string>(&batchdir)->default_value("batch"),                 "Batch jobs directory")
     ("queue,q",       value<string>(&queue)->default_value(""),                         "Batch queue to submit to")
+    ("runLocal",      bool_switch(&runLocal)->default_value(false),                     "Run batch jobs locally")
     ;
 }
 

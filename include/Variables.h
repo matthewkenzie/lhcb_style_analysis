@@ -23,6 +23,9 @@ class Variables {
     int       sqrts;
     TString   year;
 
+    // this must be declared back here (for TMVAWrapperBase class)
+    ULong64_t eventNumber;
+
 };
 #endif
 

@@ -29,7 +29,7 @@ RunEngine::RunEngine(TString _name, int argc, char **argv):
   if (arg.usage) exit(0);
 
   // create batch jobs if needed
-  if (arg.batch) {
+  if (arg.batchjobs) {
     createBatchJobs();
     exit(0);
   }
@@ -43,6 +43,7 @@ RunEngine::RunEngine(TString _name, int argc, char **argv):
 
 RunEngine::~RunEngine(){
   timer.Stop();
+  cout << "SUCCESS" << endl;
   cout << "Took: "; timer.Print();
 }
 
@@ -141,7 +142,14 @@ void RunEngine::run() {
       v->year    = years[f];
 
       // print progress
-      printProgressBar( iEntry, fEntry, lEntry );
+      if ( arg.batchmode ) {
+        if ( iEntry%1000==0 ) {
+          print("", Form("Entry %lu / %lu", iEntry, lEntry) );
+        }
+      }
+      else {
+        printProgressBar( iEntry, fEntry, lEntry );
+      }
 
       // analyse the event
       bool passed = true;
@@ -167,9 +175,15 @@ void RunEngine::run() {
 
   }
 
+  // terminate analysers
+  for (int a=0; a<analysers.size(); a++) {
+    analysers[a]->Term();
+  }
+
   //printProgressBar(arg.lastEntry, true);
   eventCounter.printSummary();
 
+  print("RunEngine::run()", Form("Saving outputfile: %s",outfile->GetName()) );
   //outtree->Print();
   outtree->AutoSave();
   outfile->cd();
@@ -182,11 +196,6 @@ void RunEngine::run() {
   cfg.cfgDatFile.Write();
   //delete fChain;
   delete outfile;
-
-  // terminate analysers
-  for (int a=0; a<analysers.size(); a++) {
-    analysers[a]->Term();
-  }
 
 }
 

@@ -22,9 +22,11 @@ class OptParser {
     bool          verbose;
     bool          debug;
     bool          usage;
-    bool          batch;
+    bool          batchmode;
+    bool          batchjobs;
     std::string   batchdir;
     std::string   queue;
+    bool          runLocal;
 
     std::string   prog_name;
 

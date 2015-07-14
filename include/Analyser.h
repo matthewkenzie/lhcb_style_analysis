@@ -14,8 +14,8 @@ class Analyser {
     Analyser(TString _name);
     virtual ~Analyser() = 0;
 
-    void Init();
-    void Term();
+    virtual void Init();
+    virtual void Term();
     virtual bool AnalyseEvent() = 0;
 
     TString name;

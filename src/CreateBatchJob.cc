@@ -63,7 +63,7 @@ void CreateBatchJob::writeSubFile() {
   of << Form("cp %s/%s/%s.dat .",cwd.c_str(),rOpt.batchdir.c_str(),fOpt.name.Data()) << endl;
 
   string exec_line;
-  exec_line += Form("./%s -c %s.dat -o %s.root", prog_name.c_str(), fOpt.name.Data(), fOpt.name.Data());
+  exec_line += Form("./%s -c %s.dat -o %s.root -b", prog_name.c_str(), fOpt.name.Data(), fOpt.name.Data());
 
   of << Form ( "if ( %s ) then ",exec_line.c_str() ) << endl;
   of << Form( "\t cp %s.root %s/%s/", fOpt.name.Data(), cwd.c_str(), rOpt.batchdir.c_str() ) << endl;
@@ -91,13 +91,15 @@ void CreateBatchJob::submitJob() {
 
   string submit_line;
 
-  if ( rOpt.queue != "" ) {
+  if ( rOpt.queue != "" && !rOpt.runLocal ) {
     submit_line = Form( "bsub -q %s -o %s.log %s.sh", rOpt.queue.c_str(),path.c_str(), path.c_str());
   }
-  else {
+  else if ( rOpt.runLocal ) {
     submit_line = Form( "%s.sh", path.c_str() ); 
   }
-  //print("","\t"+submit_line);
+  else {
+    print("",Form("\t Written: %s/%s.sh",rOpt.batchdir.c_str(),fOpt.name.Data()));
+  }
   system( submit_line.c_str() );
 }
 

@@ -10,10 +10,10 @@ find_package(ROOT REQUIRED COMPONENTS MathCore MathMore RIO Hist Tree RooFit Roo
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   set(Boost_INCLUDE_DIR "/afs/cern.ch/sw/lcg/external/Boost/1.53.0_python2.7/x86_64-slc6-gcc47-opt/include/boost-1_53")
   set(Boost_LIBRARY_DIR "/afs/cern.ch/sw/lcg/external/Boost/1.53.0_python2.7/x86_64-slc6-gcc47-opt/lib" )
-  set(ENV{BOOST_ROOT} /afs/cern.ch/sw/lcg/external/Boost/1.53.0_python2.7/x86_64-slc6-gcc47-opt)
+  set(ENV{Boost_ROOT} /afs/cern.ch/sw/lcg/external/Boost/1.53.0_python2.7/x86_64-slc6-gcc47-opt)
 ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux") 
 
-set(Boost_USE_STATIC_LIBS        ON) # only find static libs
+set(Boost_USE_STATIC_LIBS       OFF) # only find static libs
 set(Boost_USE_MULTITHREADED      ON)
 set(Boost_USE_STATIC_RUNTIME    OFF)
 
@@ -38,8 +38,11 @@ foreach( source_file ${MAIN_SOURCES} )
   string( REPLACE ".cpp" "" exec_name_path ${source_file} )
   get_filename_component( exec_name ${exec_name_path} NAME )
   #message( ${exec_name} ${source_file} )
-  add_executable( ${exec_name} ${source_file} ${SOURCES} )
-  target_link_libraries( ${exec_name} ${ROOT_LIBRARIES} ${Boost_LIBRARIES} )
-  install( TARGETS ${exec_name} DESTINATION "${PROJECT_SOURCE_DIR}/bin" )
+  add_library( ${exec_name}Lib SHARED ${SOURCES} )
+  set_property(TARGET ${exec_name}Lib PROPERTY IMPORTED_LOCATION "${PROJECT_SOURCE_DIR}/lib")
+  target_link_libraries( ${exec_name}Lib ${ROOT_LIBRARIES} ${Boost_LIBRARIES} )
+  add_executable( ${exec_name} ${source_file} )
+  target_link_libraries( ${exec_name} ${exec_name}Lib )
+  install( PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/${exec_name} DESTINATION ${PROJECT_SOURCE_DIR}/bin ) 
 endforeach()
 
