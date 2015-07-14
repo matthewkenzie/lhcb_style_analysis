@@ -23,7 +23,8 @@ OptParser::OptParser():
     ("debug,d",       bool_switch(&debug)->default_value(false),                        "Run in debug mode")
     ("batchmode,b",   bool_switch(&batchmode)->default_value(false),                    "Run in batch mode")
     ("batchjobs,j",   bool_switch(&batchjobs)->default_value(false),                    "Create batch jobs")
-    ("batchdir,d",    value<string>(&batchdir)->default_value("batch"),                 "Batch jobs directory")
+    ("batchdir,D",    value<string>(&batchdir)->default_value("batch"),                 "Batch jobs directory")
+    ("splitjobs,s",   value<Long64_t>(&jobSplitting)->default_value(0),                 "Split jobs into subjobs with this number of events")
     ("queue,q",       value<string>(&queue)->default_value(""),                         "Batch queue to submit to")
     ("runLocal",      bool_switch(&runLocal)->default_value(false),                     "Run batch jobs locally")
     ;

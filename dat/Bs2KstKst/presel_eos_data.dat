@@ -11,7 +11,9 @@
 ##     tname: name of the input tree                                                              ##
 ####################################################################################################
 
-# Bs2Kst0Kst0
-itype=-70  sqrts=7  year=2011  name=Bs2Kst0Kst0_MC2011            fname=root://eoslhcb.cern.ch//eos/lhcb/user/j/jugarcia/MC_ntuples/Bs2Kst0Kst0_wide/Bs2Kst0Kst0_wide_MC2011_magDown_Bs2Kst0Kst0_13104001_Job1558.root       tname=Bs2Kst0Kst0/DecayTree
-itype=-70  sqrts=7  year=2011  name=Bs2Kst0Kst0_MC2011            fname=root://eoslhcb.cern.ch//eos/lhcb/user/r/romerov/Ntuples/Bs2Kst0Kst0/Bs2Kst0Kst0_wide_MC2011_magUp_Bs2Kst0Kst0_13104001_Job1620.root                  tname=Bs2Kst0Kst0/DecayTree
+# Data
+itype=71   sqrts=7  year=2011 	name=Data2011                     fname=root://eoslhcb.cern.ch//eos/lhcb/user/j/jugarcia/real_ntuples/Bs2Kst0Kst0_wide/Bs2Kst0Kst0_wide_Real2011_magDown_Job1532.root                      tname=Bs2Kst0Kst0/DecayTree
+itype=71   sqrts=7  year=2011 	name=Data2011                     fname=root://eoslhcb.cern.ch//eos/lhcb/user/j/jugarcia/real_ntuples/Bs2Kst0Kst0_wide/Bs2Kst0Kst0_wide_Real2011_magUp_Job1531.root                        tname=Bs2Kst0Kst0/DecayTree
+itype=81   sqrts=8  year=2012 	name=Data2012                     fname=root://eoslhcb.cern.ch//eos/lhcb/user/j/jugarcia/real_ntuples/Bs2Kst0Kst0_wide/Bs2Kst0Kst0_wide_Real2012_magDown_Job1539.root                      tname=Bs2Kst0Kst0/DecayTree
+itype=81   sqrts=8  year=2012		name=Data2012                     fname=root://eoslhcb.cern.ch//eos/lhcb/user/j/jugarcia/real_ntuples/Bs2Kst0Kst0_wide/Bs2Kst0Kst0_wide_Real2012_magUp_Job1538.root  		                  tname=Bs2Kst0Kst0/DecayTree
 

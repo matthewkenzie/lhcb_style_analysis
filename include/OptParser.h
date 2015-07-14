@@ -24,6 +24,7 @@ class OptParser {
     bool          usage;
     bool          batchmode;
     bool          batchjobs;
+    Long64_t      jobSplitting;
     std::string   batchdir;
     std::string   queue;
     bool          runLocal;
