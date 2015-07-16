@@ -49,9 +49,9 @@ void Bs2KstKst::BDTNoPID::setTrainingOptions(){
 }
 
 void Bs2KstKst::BDTNoPID::setInputVariables() {
-  addVar("B_s0_PT");
-  addVar("Kst_PT");
-  addVar("Kstb_PT");
+  addVar("B_s0_DTF_B_s0_PT");
+  addVar("B_s0_DTF_KST1_PT");
+  addVar("B_s0_DTF_KST2_PT");
   addVar("max_track_PT");
   addVar("min_track_PT");
   addVar("B_s0_ETA");
@@ -59,7 +59,7 @@ void Bs2KstKst::BDTNoPID::setInputVariables() {
   addVar("Kstb_ETA");
   addVar("max_track_ETA");
   addVar("min_track_ETA");
-  addVar("B_s0_DIRA");
+  addVar("B_s0_DIRA_OWNPV");
   addVar("B_s0_ENDVERTEX_CHI2");
 }
 
@@ -74,12 +74,12 @@ bool Bs2KstKst::BDTNoPID::setEventValuesAndEvaluate() {
   // setup values
   //
   // PT
-  setVal("B_s0_PT",v->B_s0_PT);
-  setVal("Kst_PT",v->Kst_PT);
-  setVal("Kstb_PT",v->Kstb_PT);
+  setVal("B_s0_DTF_B_s0_PT",v->B_s0_DTF_B_s0_PT);
+  setVal("B_s0_DTF_KST1_PT",v->B_s0_DTF_KST1_PT);
+  setVal("B_s0_DTF_KST2_PT",v->B_s0_DTF_KST2_PT);
 
   // pt order
-  double pts[4]  = { v->Kplus_PT ,  v->Kminus_PT ,  v->Piplus_PT ,  v->Piminus_PT };
+  double pts[4]  = { v->B_s0_DTF_KST1_K_PT , v->B_s0_DTF_KST2_K_PT , v->B_s0_DTF_KST1_PI_PT , v->B_s0_DTF_KST2_PI_PT };
   double etas[4] = { v->Kplus_ETA , v->Kminus_ETA , v->Piplus_ETA , v->Piminus_ETA };
   int max=-1;
   int min=-1;
@@ -95,7 +95,7 @@ bool Bs2KstKst::BDTNoPID::setEventValuesAndEvaluate() {
       min = i;
     }
   }
-  
+
   setVal("max_track_PT",maxpt);
   setVal("min_track_PT",minpt);
 
@@ -105,7 +105,7 @@ bool Bs2KstKst::BDTNoPID::setEventValuesAndEvaluate() {
   setVal("max_track_ETA",etas[max]);
   setVal("min_track_ETA",etas[min]);
 
-  setVal("B_s0_DIRA",v->B_s0_DIRA_OWNPV);
+  setVal("B_s0_DIRA_OWNPV",v->B_s0_DIRA_OWNPV);
   setVal("B_s0_ENDVERTEX_CHI2",v->B_s0_ENDVERTEX_CHI2);
 
   // TRAINING

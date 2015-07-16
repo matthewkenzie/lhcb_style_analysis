@@ -20,21 +20,21 @@ CreateBatchJob::CreateBatchJob( const OptParser &_rOpt, const InputFileOptions &
   indep_treenames(fOpt.treenames)
 {}
 
-void CreateBatchJob::writeDatFile( vector<TString> indep_fnames, vector<TString> indep_tnames, int job) 
+void CreateBatchJob::writeDatFile( vector<TString> indep_fnames, vector<TString> indep_tnames, int job)
 {
   system(Form("mkdir -p %s",rOpt.batchdir.c_str()));
 
   string datfname = Form("%s/%s",rOpt.batchdir.c_str(),fOpt.name.Data());
   if (job > -1 ) datfname += string( Form("_j%d",job) ) ;
   datfname += string( ".dat" ) ;
-  
+
   ofstream of(datfname.c_str());
 
   of << Form("# %s",fOpt.name.Data()) << endl;
   of << endl;
-  
+
   for ( unsigned int f=0; f<indep_fnames.size(); f++) {
-    
+
     of << Form("itype=%-5d  sqrts=%-2d  year=%-5s  name=%-25s   fname=%-100s   tname=%-100s", fOpt.itype, fOpt.sqrts, fOpt.year.Data(), fOpt.name.Data(), indep_fnames[f].Data(), indep_tnames[f].Data()) << endl;
   }
 
@@ -47,7 +47,7 @@ void CreateBatchJob::writeDatFile( vector<TString> indep_fnames, vector<TString>
 }
 
 void CreateBatchJob::writeSubFile(Long64_t fEntry, Long64_t lEntry, int job , int subj) {
- 
+
   system(Form("mkdir -p %s",rOpt.batchdir.c_str()));
 
   string basename = fOpt.name.Data();
@@ -71,7 +71,7 @@ void CreateBatchJob::writeSubFile(Long64_t fEntry, Long64_t lEntry, int job , in
 
   of << "mkdir -p scratch" << endl;
   of << "cd scratch" << endl;
-  of << Form("source %s/setup_lxplus.sh",cwd.c_str()) << endl; 
+  of << Form("source %s/setup_lxplus.sh",cwd.c_str()) << endl;
   of << Form("cp %s/bin/%s .",cwd.c_str(),prog_name.c_str()) << endl;
   of << Form("mkdir -p lib") << endl;
   of << Form("cp %s/lib/lib%sLib.so lib/",cwd.c_str(),prog_name.c_str()) << endl;
@@ -99,18 +99,18 @@ void CreateBatchJob::writeSubFile(Long64_t fEntry, Long64_t lEntry, int job , in
 }
 
 void CreateBatchJob::writeJobFiles() {
- 
+
   cout << rOpt.jobSplitting << endl;
   if ( rOpt.jobSplitting > -1 ) {
-    
+
     // job splitting on
-    
+
     // need to check for multiple files
 
     assert( indep_filenames.size() == indep_treenames.size() );
 
     for ( unsigned int f=0; f<indep_filenames.size(); f++ ) {
-      
+
       // update fOpt
       vector<TString> tmp_filenames;
       vector<TString> tmp_treenames;
@@ -135,12 +135,12 @@ void CreateBatchJob::writeJobFiles() {
       for ( int j=0; j<required_jobs; j++ ) {
         Long64_t low = j*(rOpt.jobSplitting);
         Long64_t high = (j+1)*(rOpt.jobSplitting) > nEntries ? nEntries : (j+1)*(rOpt.jobSplitting);
-        print("",string(Form("  Job/Subjob %-3d %-3d : [ %-7d , %-7d ]", f, j, low, high)));
+        print("",string(Form("  Job/Subjob %-3d %-3d : [ %-7lld , %-7lld ]", f, j, low, high)));
         writeSubFile( low, high, f, j);
-      
+
       }
     }
-  
+
   }
   else {
     writeDatFile(fOpt.filenames, fOpt.treenames);
@@ -151,14 +151,14 @@ void CreateBatchJob::writeJobFiles() {
 void CreateBatchJob::submitJob() {
 
   for ( unsigned int i=0; i<writtenSubScripts.size(); i++) {
-    
+
       print("CreateBatchJob::submitJob()",string(Form("Will submit: %s.sh to queue: %s",writtenSubScripts[i].c_str(),rOpt.queue.c_str())));
-    
-    
+
+
     string cwd  = boost::filesystem::current_path().string();
     string ename = boost::filesystem::path( writtenSubScripts[i] ).stem().string();
     string path = cwd + "/" + rOpt.batchdir + "/" + ename;
-  
+
     string submit_line;
     if ( rOpt.runLocal ) {
       submit_line = string(Form( "%s.sh > %s.log", path.c_str(),path.c_str()));

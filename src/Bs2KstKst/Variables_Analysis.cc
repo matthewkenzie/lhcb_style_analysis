@@ -2750,5 +2750,27 @@ void Bs2KstKst::Variables_Analysis::setOutputBranches(TTree *tree) {
 
   // added here
   tree->Branch("bdtoutput"                             , &bdtoutput                               , "bdtoutput/F"                           );
+  tree->Branch("Piplus_ProbNNpiKp"                     , &Piplus_ProbNNpiKp                       , "Piplus_ProbNNpiKp/D"                   );
+  tree->Branch("Piminus_ProbNNpiKp"                    , &Piminus_ProbNNpiKp                      , "Piminus_ProbNNpiKp/D"                  );
+  tree->Branch("Piplus_MC12TuneV2_ProbNNpiKp"          , &Piplus_MC12TuneV2_ProbNNpiKp            , "Piplus_MC12TuneV2_ProbNNpiKp/D"        );
+  tree->Branch("Piminus_MC12TuneV2_ProbNNpiKp"         , &Piminus_MC12TuneV2_ProbNNpiKp           , "Piminus_MC12TuneV2_ProbNNpiKp/D"       );
+  tree->Branch("Piplus_MC12TuneV3_ProbNNpiKp"          , &Piplus_MC12TuneV3_ProbNNpiKp            , "Piplus_MC12TuneV3_ProbNNpiKp/D"        );
+  tree->Branch("Piminus_MC12TuneV3_ProbNNpiKp"         , &Piminus_MC12TuneV3_ProbNNpiKp           , "Piminus_MC12TuneV3_ProbNNpiKp/D"       );
+
+  tree->Branch("min_kaon_ProbNNk"                      , &min_kaon_ProbNNk                        , "min_kaon_ProbNNk/D"                    );
+  tree->Branch("min_pion_ProbNNpiKp"                   , &min_pion_ProbNNpiKp                     , "min_pion_ProbNNpiKp/D"                 );
+  tree->Branch("min_kaon_MC12TuneV2_ProbNNk"           , &min_kaon_MC12TuneV2_ProbNNk             , "min_kaon_MC12TuneV2_ProbNNk/D"         );
+  tree->Branch("min_pion_MC12TuneV2_ProbNNpiKp"        , &min_pion_MC12TuneV2_ProbNNpiKp          , "min_pion_MC12TuneV2_ProbNNpiKp/D"      );
+  tree->Branch("min_kaon_MC12TuneV3_ProbNNk"           , &min_kaon_MC12TuneV3_ProbNNk             , "min_kaon_MC12TuneV3_ProbNNk/D"         );
+  tree->Branch("min_pion_MC12TuneV3_ProbNNpiKp"        , &min_pion_MC12TuneV3_ProbNNpiKp          , "min_pion_MC12TuneV3_ProbNNpiKp/D"      );
+
+  tree->Branch("pass_bdt"                              , &pass_bdt                                , "pass_bdt/O"                            );
+  tree->Branch("pass_pid"                              , &pass_pid                                , "pass_pid/O"                            );
+
+  tree->Branch("B_s0_DTF_B_s0_CosTheta1"               , &B_s0_DTF_B_s0_CosTheta1                 , "B_s0_DTF_B_s0_CosTheta1/D"             );
+  tree->Branch("B_s0_DTF_B_s0_CosTheta2"               , &B_s0_DTF_B_s0_CosTheta2                 , "B_s0_DTF_B_s0_CosTheta2/D"             );
+  tree->Branch("B_s0_DTF_B_s0_Phi1"                    , &B_s0_DTF_B_s0_Phi1                      , "B_s0_DTF_B_s0_Phi1/D"                  );
+  tree->Branch("B_s0_DTF_TAU"                          , &B_s0_DTF_TAU                            , "B_s0_DTF_TAU/D"                        );
+  tree->Branch("B_s0_DTF_TAUERR"                       , &B_s0_DTF_TAUERR                         , "B_s0_DTF_TAUERR/D"                     );
 }
 

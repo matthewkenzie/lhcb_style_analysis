@@ -101,6 +101,33 @@ void EventCounter::countEvent( TString evName, TString analyserName, bool isPass
 
 }
 
+void EventCounter::printShortSummary( TString evName ) {
+
+    int index=-1;
+    for ( unsigned int i=0; i<sortedNames.size(); i++ ) {
+      if ( sortedNames[i] == evName ) {
+        index = i;
+        break;
+      }
+    }
+
+    int itype  = nameToTypeMap[ sortedNames[index] ];
+
+    print("EventCounter::shortSummary()", Form("%-30s (itype=%-4d)", evName.Data(), itype) );
+
+    int startEvs   = int(hProc->GetBinContent( hProc->FindBin(0,index) ) );
+    int passEvs    = int(hPass->GetBinContent( hProc->FindBin( analyserNames.size()-1, index) ) );
+    double sumEff  = 100.* double ( passEvs ) / double ( startEvs );
+
+    for ( int x=0; x < analyserNames.size(); x++ ) {
+
+      int bin2d = hPass->FindBin(x,index);
+
+      print("", Form("       %-15s -- %5d / %-5d events passed = %6.2f%% efficient ", analyserNames[x].Data(), int(hPass->GetBinContent(bin2d)), int(hProc->GetBinContent(bin2d)), hEff->GetBinContent(bin2d) ) );
+    }
+    print("", Form("     %-15s -- %5d / %-5d events passed = %6.2f%% efficient ", "TOTAL", passEvs, startEvs, sumEff) );
+}
+
 void EventCounter::printSummary() {
 
   int allEventsSeen        = 0;
@@ -112,8 +139,6 @@ void EventCounter::printSummary() {
     int itype  = nameToTypeMap[ sortedNames[y] ];
     TString evname = sortedNames[y];
 
-    print("", Form("  %-30s (itype=%-4d)", evname.Data(), itype) );
-
     int startEvs   = int(hProc->GetBinContent( hProc->FindBin(0,y) ) );
     int passEvs    = int(hPass->GetBinContent( hProc->FindBin( analyserNames.size()-1, y) ) );
     double sumEff  = 100.* double ( passEvs ) / double ( startEvs );
@@ -121,13 +146,14 @@ void EventCounter::printSummary() {
     allEventsSeen        += startEvs;
     allEventsSeenPassing += passEvs;
 
-    for ( int x=0; x < analyserNames.size(); x++ ) {
+    printShortSummary( sortedNames[y] );
+    //for ( int x=0; x < analyserNames.size(); x++ ) {
 
-      int bin2d = hPass->FindBin(x,y);
+      //int bin2d = hPass->FindBin(x,y);
 
-      print("", Form("       %-15s -- %5d / %-5d events passed = %6.2f%% efficient ", analyserNames[x].Data(), int(hPass->GetBinContent(bin2d)), int(hProc->GetBinContent(bin2d)), hEff->GetBinContent(bin2d) ) );
-    }
-    print("", Form("     %-15s -- %5d / %-5d events passed = %6.2f%% efficient ", "TOTAL", passEvs, startEvs, sumEff) );
+      //print("", Form("       %-15s -- %5d / %-5d events passed = %6.2f%% efficient ", analyserNames[x].Data(), int(hPass->GetBinContent(bin2d)), int(hProc->GetBinContent(bin2d)), hEff->GetBinContent(bin2d) ) );
+    //}
+    //print("", Form("     %-15s -- %5d / %-5d events passed = %6.2f%% efficient ", "TOTAL", passEvs, startEvs, sumEff) );
   }
 
   double totalEff = 100.* double( allEventsSeenPassing ) / double( allEventsSeen );

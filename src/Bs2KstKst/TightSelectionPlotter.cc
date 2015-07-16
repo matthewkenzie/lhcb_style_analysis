@@ -6,11 +6,12 @@ using namespace TMath;
 
 Bs2KstKst::TightSelectionPlotter::TightSelectionPlotter(TString _name, const Variables_Analysis *_v):
   PlotterBase(_name,_v),
-  v(_v)
+  v(_v),
+  split(false)
 {
   normalise = true;
   normalisation = 1.;
-  outfilename = "root/TightSelectionPlotterOut.root";
+  outfilename = Form("root/%sOut.root",_name.Data());
 }
 
 Bs2KstKst::TightSelectionPlotter::~TightSelectionPlotter(){}
@@ -45,42 +46,43 @@ void Bs2KstKst::TightSelectionPlotter::defineDrawingConfig(){
   // add these drawing options
   // -------------------------------------------- //
   // split years same plot
-  /*
-  TColor *blueFill = gROOT->GetColor(kBlue-4);
-  blueFill->SetAlpha(0.4);
-  TColor *redFill = gROOT->GetColor(kRed-4);
-  redFill->SetAlpha(0.4);
+  if ( split ) {
+    TColor *blueFill = gROOT->GetColor(kBlue-4);
+    blueFill->SetAlpha(0.4);
+    TColor *redFill = gROOT->GetColor(kRed-4);
+    redFill->SetAlpha(0.4);
 
-  addDrawOpt("mc_sig_2011",   "Signal MC 2011", -71);
-  setDrawOptDefaultFill(blueFill->GetNumber());
-  addDrawOpt("mc_sig_2012",   "Signal MC 2012", -81);
-  setDrawOptDefaultFill(redFill->GetNumber());
+    addDrawOpt("mc_sig_2011",   "Signal MC 2011", -70);
+    setDrawOptDefaultFill(blueFill->GetNumber());
+    addDrawOpt("mc_sig_2012",   "Signal MC 2012", -80);
+    setDrawOptDefaultFill(redFill->GetNumber());
 
-  addDrawOpt("data_2011",   "Data 2011", 71);
-  setDrawOptDefaultPoint(kBlue);
-  addDrawOpt("data_2012",   "Data 2012", 81);
-  setDrawOptDefaultPoint(kRed);
+    addDrawOpt("data_2011",   "Data 2011", 71);
+    setDrawOptDefaultPoint(kBlue);
+    addDrawOpt("data_2012",   "Data 2012", 81);
+    setDrawOptDefaultPoint(kRed);
 
-  // add this as a residual plot option
-  addResidOpt(make_pair(2,0));
-  addResidOpt(make_pair(3,1));
-  setResidType(1);
-  // -------------------------------------------- //
-  */
-
+    // add this as a residual plot option
+    addResidOpt(make_pair(2,0));
+    addResidOpt(make_pair(3,1));
+    setResidType(1);
+    // -------------------------------------------- //
+  }
   // -------------------------------------------- //
   // combined years
-  TColor *greenFill = gROOT->GetColor(kGreen-3);
-  greenFill->SetAlpha(0.4);
+  else {
+    TColor *greenFill = gROOT->GetColor(kGreen-3);
+    greenFill->SetAlpha(0.4);
 
-  addDrawOpt("mc_sig",   "Signal MC", -71, -81);
-  setDrawOptDefaultFill(greenFill->GetNumber());
+    addDrawOpt("mc_sig",   "Signal MC", -70, -80);
+    setDrawOptDefaultFill(greenFill->GetNumber());
 
-  addDrawOpt("data",   "Data", 71, 81);
-  setDrawOptDefaultPoint(kGreen+3);
+    addDrawOpt("data",   "Data", 71, 81);
+    setDrawOptDefaultPoint(kGreen+3);
 
-  addResidOpt(make_pair(1,0));
-  setResidType(1);
+    addResidOpt(make_pair(1,0));
+    setResidType(1);
+  }
   // -------------------------------------------- //
 
 }
@@ -88,7 +90,6 @@ void Bs2KstKst::TightSelectionPlotter::defineDrawingConfig(){
 bool Bs2KstKst::TightSelectionPlotter::fillHistograms(){
 
   // fill hists now
-
   fillHist("B_s0_MM",           v->B_s0_MM);
   fillHist("Kst_MM",            v->Kst_MM);
   fillHist("Kstb_MM",           v->Kstb_MM);
@@ -107,5 +108,6 @@ bool Bs2KstKst::TightSelectionPlotter::fillHistograms(){
 
   fillHist("B_s0_ARCCOS_DIRA",  TMath::ACos(v->B_s0_DIRA_OWNPV));
   fillHist("B_s0_VTX_CHI2",     v->B_s0_ENDVERTEX_CHI2);
+
   return true;
 }

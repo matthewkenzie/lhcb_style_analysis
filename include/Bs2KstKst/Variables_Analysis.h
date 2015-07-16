@@ -1388,9 +1388,32 @@ namespace Bs2KstKst {
       Double_t             B_s0_DTF_B_s0_ETA                       ;
       Double_t             B_s0_DTF_Kst_ETA                        ;
       Double_t             B_s0_DTF_Kstb_ETA                       ;
-      
+
       // added here
       Float_t              bdtoutput                               ;
+
+      Double_t             Piplus_ProbNNpiKp                       ;
+      Double_t             Piminus_ProbNNpiKp                      ;
+      Double_t             Piplus_MC12TuneV2_ProbNNpiKp            ;
+      Double_t             Piminus_MC12TuneV2_ProbNNpiKp           ;
+      Double_t             Piplus_MC12TuneV3_ProbNNpiKp            ;
+      Double_t             Piminus_MC12TuneV3_ProbNNpiKp           ;
+
+      Double_t             min_kaon_ProbNNk                        ;
+      Double_t             min_pion_ProbNNpiKp                     ;
+      Double_t             min_kaon_MC12TuneV2_ProbNNk             ;
+      Double_t             min_pion_MC12TuneV2_ProbNNpiKp          ;
+      Double_t             min_kaon_MC12TuneV3_ProbNNk             ;
+      Double_t             min_pion_MC12TuneV3_ProbNNpiKp          ;
+
+      Bool_t               pass_bdt                                ;
+      Bool_t               pass_pid                                ;
+
+      Double_t             B_s0_DTF_B_s0_CosTheta1                 ;
+      Double_t             B_s0_DTF_B_s0_CosTheta2                 ;
+      Double_t             B_s0_DTF_B_s0_Phi1                      ;
+      Double_t             B_s0_DTF_TAU                            ;
+      Double_t             B_s0_DTF_TAUERR                         ;
   };
 
 }

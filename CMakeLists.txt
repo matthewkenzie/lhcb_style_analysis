@@ -11,7 +11,7 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
   set(Boost_INCLUDE_DIR "/afs/cern.ch/sw/lcg/external/Boost/1.53.0_python2.7/x86_64-slc6-gcc47-opt/include/boost-1_53")
   set(Boost_LIBRARY_DIR "/afs/cern.ch/sw/lcg/external/Boost/1.53.0_python2.7/x86_64-slc6-gcc47-opt/lib" )
   set(ENV{Boost_ROOT} /afs/cern.ch/sw/lcg/external/Boost/1.53.0_python2.7/x86_64-slc6-gcc47-opt)
-ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux") 
+ENDIF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
 
 set(Boost_USE_STATIC_LIBS       OFF) # only find static libs
 set(Boost_USE_MULTITHREADED      ON)
@@ -32,17 +32,35 @@ foreach( fil ${RECUR_SOURCES} )
   list( APPEND SOURCES ${pat} )
 endforeach()
 
-# Make the executables
+# generate root dictionary
+file ( GLOB TMP_CUSTOM_ROOT_INCS include/roofit/*.h )
+# strip full path name
+foreach( fil ${TMP_CUSTOM_ROOT_INCS} )
+  file( RELATIVE_PATH pat ${PROJECT_SOURCE_DIR}/include ${fil} )
+  list( APPEND CUSTOM_ROOT_INCS ${pat} )
+endforeach()
+
+# build dict
+set ( CUSTOM_ROOT_DICT "RootDict" )
+ROOT_GENERATE_DICTIONARY( ${CUSTOM_ROOT_DICT} ${CUSTOM_ROOT_INCS}  )
+add_custom_target( ${CUSTOM_ROOT_DICT} DEPENDS ${CUSTOM_ROOT_DICT}.cxx ${CUSTOM_ROOT_DICT}.h )
+list( APPEND SOURCES ${CUSTOM_ROOT_DICT}.cxx )
+
+# Make single shared library
+add_library( ${CMAKE_PROJECT_NAME}Lib SHARED ${SOURCES} )
+add_dependencies( ${CMAKE_PROJECT_NAME}Lib ${CUSTOM_ROOT_DICT} )
+set_property(TARGET ${CMAKE_PROJECT_NAME}Lib PROPERTY IMPORTED_LOCATION "${PROJECT_SOURCE_DIR}/lib")
+target_link_libraries( ${CMAKE_PROJECT_NAME}Lib ${ROOT_LIBRARIES} ${Boost_LIBRARIES} )
+# install it
+install( TARGETS ${CMAKE_PROJECT_NAME}Lib LIBRARY DESTINATION "${PROJECT_SOURCE_DIR}/lib" )
+
+# Make and install the executables
 file( GLOB MAIN_SOURCES "${PROJECT_SOURCE_DIR}/main/*.cpp" )
 foreach( source_file ${MAIN_SOURCES} )
   string( REPLACE ".cpp" "" exec_name_path ${source_file} )
   get_filename_component( exec_name ${exec_name_path} NAME )
-  #message( ${exec_name} ${source_file} )
-  add_library( ${exec_name}Lib SHARED ${SOURCES} )
-  set_property(TARGET ${exec_name}Lib PROPERTY IMPORTED_LOCATION "${PROJECT_SOURCE_DIR}/lib")
-  target_link_libraries( ${exec_name}Lib ${ROOT_LIBRARIES} ${Boost_LIBRARIES} )
   add_executable( ${exec_name} ${source_file} )
-  target_link_libraries( ${exec_name} ${exec_name}Lib )
-  install( PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/${exec_name} DESTINATION ${PROJECT_SOURCE_DIR}/bin ) 
+  target_link_libraries( ${exec_name} ${CMAKE_PROJECT_NAME}Lib )
+  install( PROGRAMS ${CMAKE_CURRENT_BINARY_DIR}/${exec_name} DESTINATION ${PROJECT_SOURCE_DIR}/bin )
 endforeach()
 

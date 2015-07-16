@@ -36,6 +36,8 @@ namespace Bs2KstKst {
 
       const Variables_Analysis *v;
 
+      bool split;
+
   };
 
 }

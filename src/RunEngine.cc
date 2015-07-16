@@ -50,13 +50,13 @@ RunEngine::~RunEngine(){
 
 void RunEngine::createBatchJobs()
 {
-  
+
   print("RunEngine::createBatchJobs()", "Creating batch jobs in path: "+arg.batchdir);
   for ( vector<InputFileOptions>::iterator fOpt = cfg.config.begin(); fOpt != cfg.config.end(); fOpt++ ) {
 
     CreateBatchJob c ( arg, *fOpt );
     c.WriteAndSubmit();
-    
+
   }
 }
 
@@ -114,11 +114,11 @@ void RunEngine::run() {
 
   // loop over input files
   for ( int f=0; f<infilenames.size(); f++ ) {
-  
+
     // open file
     TFile *infile = TFile::Open(infilenames[f]);
     if ( ! infile ) error( "File not found found: "+infilenames[f] );
-    
+
     // load tree
     TTree *intree = (TTree*)infile->Get(intreenames[f]);
     if ( ! intree ) error("Tree: "+intreenames[f]+" not found in file: "+infilenames[f] );
@@ -176,6 +176,8 @@ void RunEngine::run() {
     }
     infile->Close();
     printProgressBar(lEntry, fEntry, lEntry, true, arg.batchmode);
+    cout << endl;
+    eventCounter.printShortSummary( v->evname );
 
   }
 
@@ -207,7 +209,7 @@ void RunEngine::printProgressBar(Long64_t jentry, bool isDone, bool newLine) {
 }
 
 void RunEngine::printProgressBar(Long64_t jentry, Long64_t fEntry, Long64_t lEntry, bool isDone, bool newLine) {
-	
+
   double percentage = 100.*double(jentry-fEntry)/double(lEntry-fEntry);
 	TString prog = "[";
 	for (int i=0; i<=100; i+=2) {

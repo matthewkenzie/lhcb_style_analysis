@@ -16,8 +16,8 @@ int main(int argc, char **argv) {
   Bs2KstKst::Variables_Analysis *v = new Bs2KstKst::Variables_Analysis() ;
 
   // make the analysers
-  Bs2KstKst::BDTNoPID *bdtTrainer = new Bs2KstKst::BDTNoPID     ( "BDTNoPIDTraining" , v );
-  bdtTrainer->setTrainMode(); 
+  Bs2KstKst::BDTNoPID *bdtTrainer = new Bs2KstKst::BDTNoPID     ( "BDTNoPID" , v );
+  bdtTrainer->setTrainMode();
 
   // pass variables to runner
   runner.setVariables( v );

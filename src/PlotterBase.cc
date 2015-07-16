@@ -308,7 +308,7 @@ void PlotterBase::drawHistograms(){
 
 void PlotterBase::saveHistograms(){
 
-	cout << Form("%-30s","PlotterBase::saveHistograms()") << " " << "Saving Histograms...." << endl;
+	cout << Form("%-30s","PlotterBase::saveHistograms()") << " " << "Saving Histograms to file " << outfilename << endl;
 
   TFile *outFile = new TFile(outfilename,"RECREATE");
   outFile->cd();

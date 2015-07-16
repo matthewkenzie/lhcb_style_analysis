@@ -21,6 +21,7 @@ class EventCounter {
     void Init();
     void countEvent(int itype, TString analyserName, bool isPass);
     void countEvent(TString evName, TString analyserName, bool isPass);
+    void printShortSummary(TString evName);
     void printSummary();
     void setStyle(TH1* h, bool is2d=true);
 
