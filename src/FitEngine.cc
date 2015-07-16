@@ -45,11 +45,13 @@ void FitEngine::run() {
     error( "ERROR -- No fitter set in FitEngine" );
   }
 
-  fitter->verbose = arg.verbose;
-  fitter->debug = arg.debug;
-
   if ( arg.cached ) {
-    fitter->loadCachedWorkspace( arg.cachefile );
+    if ( arg.cachedDataOnly ) {
+      fitter->loadCachedData( arg.cachefile );
+    }
+    else {
+      fitter->loadCachedWorkspace( arg.cachefile );
+    }
   }
   else {
 
@@ -58,10 +60,12 @@ void FitEngine::run() {
     fitter->addDatasets();
     fitter->makeDatasets();
     fitter->fillDatasets( arg.infilename, arg.intreename );
+    fitter->constructPdfs();
   }
 
-  fitter->constructPdfs();
-  fitter->run();
+  if ( ! arg.plotOnly ) fitter->run();
+
+  fitter->makePlots();
   fitter->save( arg.outfilename );
 
   if ( arg.interactive ) {

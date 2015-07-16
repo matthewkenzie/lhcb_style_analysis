@@ -23,6 +23,7 @@ class FitterBase {
     virtual ~FitterBase() = 0;
 
     void loadCachedWorkspace(TString fname);
+    void loadCachedData(TString fname);
 
     void addObsVar(TString name, double min, double max);
     void addObsVar(TString name, float min, float max);
@@ -83,6 +84,7 @@ class FitterBase {
     virtual void addDatasets() = 0;
     virtual void constructPdfs() = 0;
     virtual void run() = 0;
+    virtual void makePlots() = 0;
 
     bool verbose;
     bool debug;
@@ -110,7 +112,7 @@ class FitterBase {
     TCanvas* createCanvas(int canv_w=800, int canv_h=600);
 
     void plot(TString var, TString data, TString pdf="", int resid=0, TString title=""); // resid==0 (no resid), ==1 (resid hist), ==2 (pull hist)
-    void plot(TString var, std::vector<PlotComponent> plotComps, TString fname, const RooArgSet *params=NULL);
+    void plot(TString var, std::vector<PlotComponent> plotComps, TString fname, const RooArgList *params=NULL);
     void plot2D(TString xvar, TString yvar, TString obj);
 
     void splot(TString var, TString data, TString title="", int bins=-1);
@@ -125,6 +127,8 @@ class FitterBase {
     void   setDrawLog(bool val=true) { pDrawLog = val; }
     void   setTitle(TString title) { pTitle = title; }
     void   setResidType(int type)  { pResidType = type; }
+
+    void   fillOutputTrees( TFile *outf );
 
   private:
 

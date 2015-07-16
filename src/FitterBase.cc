@@ -1,4 +1,5 @@
 #include <iostream>
+#include <list>
 
 #include "TFile.h"
 #include "TTree.h"
@@ -19,6 +20,7 @@
 #include "RooCBShape.h"
 #include "RooAddPdf.h"
 #include "RooConstVar.h"
+#include "RooAbsData.h"
 
 #include "RooGaussian.h"
 #include "RooCBShape.h"
@@ -28,10 +30,12 @@
 #include "RooStats/SPlot.h"
 
 #include "FitterBase.h"
+#include "Utils.h"
 
 using namespace std;
 using namespace RooFit;
 using namespace TMath;
+using namespace Utils;
 
 FitterBase::FitterBase(TString wsname, TString name, bool _verbose, bool _debug):
   fitterName(name),
@@ -73,6 +77,24 @@ void FitterBase::loadCachedWorkspace(TString fname){
   // now load the cached version in its place
   TFile *cacheFile = TFile::Open(fname);
   w = (RooWorkspace*)cacheFile->Get(wsname);
+}
+
+void FitterBase::loadCachedData(TString fname) {
+
+  TString wsname = w->GetName();
+  TFile *cacheFile = TFile::Open(fname);
+  RooWorkspace *cacheWS = (RooWorkspace*)cacheFile->Get(wsname);
+
+  if ( ! cacheWS) error( "Can\'t fint workspace: " + wsname + " in file " + fname );
+
+  list<RooAbsData*> dlist = cacheWS->allData();
+
+  for ( list<RooAbsData*>::iterator ds = dlist.begin(); ds != dlist.end(); ds++ ) {
+
+    RooAbsData *dset = *ds;
+    if ( !dset ) error("meeh");
+    w->import( *dset );
+  }
 }
 
 void FitterBase::addObsVar(TString name, double min, double max){
@@ -336,18 +358,73 @@ void FitterBase::fillDatasets(TString fname, TString tname){
   tf->Close();
 }
 
+void FitterBase::fillOutputTrees( TFile *outf ) {
+
+  TDirectory *dir = outf->mkdir("trees");
+  dir->cd();
+
+  list<RooAbsData*> dlist = w->allData();
+
+  for ( list<RooAbsData*>::iterator ds = dlist.begin(); ds != dlist.end(); ds++ ) {
+
+    // make a tree for each
+    RooAbsData *dset = *ds;
+    TTree *tree = new TTree( dset->GetName(), dset->GetName() );
+    cout << Form("Filling output tree: %s",tree->GetName()) << endl;
+
+    // make map container for variables
+    map<TString, double> out_vars;
+
+    // initialise map
+    const RooArgSet *dset_args = dset->get();
+    // iterate these and add them to obs and sw values as appropriate
+    RooRealVar *var;
+    TIterator *iter = dset_args->createIterator();
+    while ( (var = (RooRealVar*)iter->Next()) ) {
+
+      TString br_name = var->GetName();
+      out_vars[br_name] = -999.;
+    }
+
+    // set tree branches
+    for ( map<TString,double>::iterator val = out_vars.begin(); val != out_vars.end(); val++ ) {
+      tree->Branch( val->first ,  &val->second,  val->first+"/D" );
+    }
+    // fill tree
+    for (int i=0; i<dset->numEntries(); i++) {
+      const RooArgSet *dset_args = dset->get(i);
+      // iterate these and add them to obs and sw values as appropriate
+      RooRealVar *var;
+      TIterator *iter = dset_args->createIterator();
+      while ( (var = (RooRealVar*)iter->Next()) ) {
+        TString br_name = var->GetName();
+        out_vars[br_name] = var->getVal();
+      }
+      tree->Fill();
+    }
+    cout << "\t " << tree->GetEntries() << " entries" << endl;
+    tree->Write();
+  }
+}
+
 void FitterBase::save(TString fname){
+
   TFile *outf = new TFile(fname,"RECREATE");
   outf->cd();
+  fillOutputTrees( outf );
+  outf->cd();
+
   w->Write();
   if ( verbose || debug ) {
     cout << "Printout of workspace: " << endl;
     w->Print();
   }
-  TDirectory *dir = outf->mkdir("residuals");
-  dir->cd();
-  for (vector<TObject*>::iterator obj=saveObjsStore.begin(); obj!=saveObjsStore.end(); obj++){
-    (*obj)->Write();
+  if ( saveObjsStore.size() > 0 ) {
+    TDirectory *dir = outf->mkdir("residuals");
+    dir->cd();
+    for (vector<TObject*>::iterator obj=saveObjsStore.begin(); obj!=saveObjsStore.end(); obj++){
+      (*obj)->Write();
+    }
   }
   outf->Close();
   cout << "Written output to file: " << fname << endl;
@@ -509,7 +586,7 @@ void FitterBase::plot(TString var, TString data, TString pdf, int resid, TString
   delete leg;
 }
 
-void FitterBase::plot(TString var, vector<PlotComponent> plotComps, TString fname, const RooArgSet *params) {
+void FitterBase::plot(TString var, vector<PlotComponent> plotComps, TString fname, const RooArgList *params) {
 
   print("Plotting following components in variable: "+var);
   for (unsigned int i=0; i<plotComps.size(); i++){
@@ -579,8 +656,9 @@ void FitterBase::plot(TString var, vector<PlotComponent> plotComps, TString fnam
       top = 0.8;
     }
     double bottom = top-(0.05*params->getSize());
-    TPaveText *pNames = new TPaveText(pBoxX,bottom,pBoxX+0.08,top,"ndc");
-    TPaveText *pVals = new TPaveText(pBoxX+0.08,bottom,pBoxX+0.2,top,"ndc");
+    TPaveText *pNames = new TPaveText(pBoxX,bottom,pBoxX+0.10,top,"ndc");
+    TPaveText *pVals = new TPaveText(pBoxX+0.10,bottom,pBoxX+0.19,top,"ndc");
+    TPaveText *pErrs = new TPaveText(pBoxX+0.19,bottom,pBoxX+0.23,top,"ndc");
     pNames->SetFillColor(0);
     pNames->SetShadowColor(0);
     pNames->SetLineColor(0);
@@ -591,14 +669,21 @@ void FitterBase::plot(TString var, vector<PlotComponent> plotComps, TString fnam
     pVals->SetLineColor(0);
     pVals->SetTextSize(0.03);
     pVals->SetTextAlign(11);
+    pErrs->SetFillColor(0);
+    pErrs->SetShadowColor(0);
+    pErrs->SetLineColor(0);
+    pErrs->SetTextSize(0.03);
+    pErrs->SetTextAlign(11);
     RooRealVar *parg;
     TIterator *iter = params->createIterator();
     while ((parg = (RooRealVar*)iter->Next())){
 	    pNames->AddText(Form("%-10s",parg->GetTitle()));
-      pVals->AddText(Form("= %4.2f #pm %4.2f",parg->getVal(),parg->getError()));
+      pVals->AddText(Form("= %7.1f ",parg->getVal()));
+      pErrs->AddText(Form("#pm %-5.1f",parg->getError()));
     }
     pNames->Draw("same");
     pVals->Draw("same");
+    pErrs->Draw("same");
   }
 
   // plot resid if required

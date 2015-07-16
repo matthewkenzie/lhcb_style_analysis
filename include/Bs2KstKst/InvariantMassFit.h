@@ -18,6 +18,7 @@ namespace Bs2KstKst {
       void constructPdfs();
 
       void run();
+      void makePlots();
 
     private:
 

@@ -23,6 +23,8 @@ class FitOptParser {
     bool          verbose;
     bool          cached;
     std::string   cachefile;
+    bool          cachedDataOnly;
+    bool          plotOnly;
 
     std::string   prog_name;
 

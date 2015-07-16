@@ -20,10 +20,11 @@ class FitEngine {
     void setFitter( FitterBase *fit );
     void run();
 
+    FitOptParser arg;
+
   private:
 
     TString name;
-    FitOptParser arg;
     TStopwatch timer;
 
     FitterBase *fitter;

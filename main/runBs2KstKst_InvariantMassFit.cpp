@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
   // create run engine
   FitEngine fitEngine("Bs2KstKstInvariantMassFit", argc, argv);
 
-  Bs2KstKst::InvariantMassFit *fitter = new Bs2KstKst::InvariantMassFit("w","InvariantMassFit");
+  Bs2KstKst::InvariantMassFit *fitter = new Bs2KstKst::InvariantMassFit("w","InvariantMassFit", fitEngine.arg.verbose, fitEngine.arg.debug );
 
   fitEngine.setFitter( fitter );
 

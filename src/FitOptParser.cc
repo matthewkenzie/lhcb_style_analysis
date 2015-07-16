@@ -22,6 +22,8 @@ FitOptParser::FitOptParser():
     ("debug,d",       bool_switch(&debug)->default_value(false),                        "Run in debug mode")
     ("cached,c",      bool_switch(&cached)->default_value(false),                       "Load cached workspace")
     ("cachefile",     value<string>(&cachefile)->default_value(""),                     "Cachefile name")
+    ("cachedDataOnly",bool_switch(&cachedDataOnly)->default_value(false),               "Load cached data only")
+    ("plotOnly",      bool_switch(&plotOnly)->default_value(false),                     "Only make the plots")
     ;
 }
 
