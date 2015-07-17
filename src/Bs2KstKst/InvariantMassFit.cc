@@ -121,6 +121,7 @@ void Bs2KstKst::InvariantMassFit::run(){
 
 void Bs2KstKst::InvariantMassFit::makePlots(){
   makeDataPlot();
+  makeSolidDataPlot();
 }
 
 void Bs2KstKst::InvariantMassFit::makeDataPlot(){
@@ -134,14 +135,17 @@ void Bs2KstKst::InvariantMassFit::makeDataPlot(){
   PlotComponent pc_data( "Data", "Data" );
   pc_data.setDefaultDataStyle();
 
+  PlotComponent pc_data_invis( "Data", "Data Invis" );
+  pc_data_invis.noleg = true;
+
   PlotComponent pc_pdf( "pdf", "Total PDF" );
   pc_pdf.setSolidLine(kBlue);
 
   PlotComponent pc_pdf_bkg( "pdf:bkg_pdf", "Background (Exp)" );
   pc_pdf_bkg.setDashedLine(kGreen+1);
 
-  PlotComponent pc_pdf_bern( "pdf:part_reco_pdf", "Partially reco" );
-  pc_pdf_bern.setDashedLine(kGreen+7);
+  PlotComponent pc_pdf_part_reco( "pdf:part_reco_pdf", "Partially reco" );
+  pc_pdf_part_reco.setDashedLine(kGreen+7);
 
   PlotComponent pc_pdf_sig( "pdf:bs2kstkst_mc_pdf", "B_{s} #rightarrow (K^{+}#pi^{-})(K^{-}#pi^{+})" );
   pc_pdf_sig.setDashedLine(kRed);
@@ -166,7 +170,7 @@ void Bs2KstKst::InvariantMassFit::makeDataPlot(){
 
   plotComps.push_back(pc_data);
   plotComps.push_back(pc_pdf_bkg);
-  plotComps.push_back(pc_pdf_bern);
+  plotComps.push_back(pc_pdf_part_reco);
   plotComps.push_back(pc_pdf_sig_bd);
   plotComps.push_back(pc_pdf_sig_phikst);
   plotComps.push_back(pc_pdf_sig_bsphikst);
@@ -175,6 +179,7 @@ void Bs2KstKst::InvariantMassFit::makeDataPlot(){
   plotComps.push_back(pc_pdf_sig_ppipipi);
   plotComps.push_back(pc_pdf_sig);
   plotComps.push_back(pc_pdf);
+  plotComps.push_back(pc_data_invis);
 
   // set up yield list
   w->var("bkg_y")->SetTitle("N_{comb.}");
@@ -204,6 +209,94 @@ void Bs2KstKst::InvariantMassFit::makeDataPlot(){
   setPBoxX(0.23);
 
   plot("B_s0_DTF_B_s0_M", plotComps, "fullfit", ordered_params);
+
+}
+
+void Bs2KstKst::InvariantMassFit::makeSolidDataPlot(){
+
+  if ( verbose || debug ) {
+    cout << "Making alternate data plot" << endl;
+  }
+
+  vector<PlotComponent> plotComps;
+
+  PlotComponent pc_data( "Data", "Data" );
+  pc_data.setDefaultDataStyle();
+
+  PlotComponent pc_data_invis( "Data", "Data Invis" );
+  pc_data_invis.noleg = true;
+
+  PlotComponent pc_pdf( "pdf", "Total PDF" );
+  pc_pdf.setSolidLine(kBlue);
+
+  PlotComponent pc_pdf_bkg( "pdf:bkg_pdf", "Background (Exp)" );
+  pc_pdf_bkg.setSolidFill(kGreen+1);
+
+  PlotComponent pc_pdf_part_reco( "pdf:bkg_pdf,part_reco_pdf", "Partially reco" );
+  pc_pdf_part_reco.setSolidFill(kGreen+7);
+
+  PlotComponent pc_pdf_sig( "pdf:bkg_pdf,part_reco_pdf,lb2pkpipi_mc_pdf,lb2ppipipi_mc_pdf,bd2rhokst_mc_pdf,bs2phikst_mc_pdf,bd2phikst_mc_pdf,bd2kstkst_mc_pdf,bs2kstkst_mc_pdf", "B_{s} #rightarrow (K^{+}#pi^{-})(K^{-}#pi^{+})" );
+  pc_pdf_sig.setSolidFill(kRed);
+
+  PlotComponent pc_pdf_sig_bd( "pdf:bkg_pdf,part_reco_pdf,lb2pkpipi_mc_pdf,lb2ppipipi_mc_pdf,bd2rhokst_mc_pdf,bs2phikst_mc_pdf,bd2phikst_mc_pdf,bd2kstkst_mc_pdf", "B_{d} #rightarrow (K^{+}#pi^{-})(K^{-}#pi^{+})" );
+  pc_pdf_sig_bd.setSolidFill(kMagenta);
+
+  PlotComponent pc_pdf_sig_phikst( "pdf:bkg_pdf,part_reco_pdf,lb2pkpipi_mc_pdf,lb2ppipipi_mc_pdf,bd2rhokst_mc_pdf,bs2phikst_mc_pdf,bd2phikst_mc_pdf", "B_{d} #rightarrow (K^{+}K^{-})(K^{-}#pi^{+})");
+  pc_pdf_sig_phikst.setSolidFill(kYellow+1);
+
+  PlotComponent pc_pdf_sig_bsphikst( "pdf:bkg_pdf,part_reco_pdf,lb2pkpipi_mc_pdf,lb2ppipipi_mc_pdf,bs2phikst_mc_pdf", "B_{s} #rightarrow (K^{+}K^{-})(K^{-}#pi^{+})");
+  pc_pdf_sig_bsphikst.setSolidFill(kGray+1);
+
+  PlotComponent pc_pdf_sig_rhokst( "pdf:bkg_pdf,part_reco_pdf,lb2pkpipi_mc_pdf,lb2ppipipi_mc_pdf,bs2phikst_mc_pdf,bd2rhokst_mc_pdf", "B_{d}#rightarrow (#pi^{+}#pi^{-})(K^{-}#pi^{+})");
+  pc_pdf_sig_rhokst.setSolidFill(kOrange+1);
+
+  PlotComponent pc_pdf_sig_pkpipi( "pdf:bkg_pdf,part_reco_pdf,lb2pkpipi_mc_pdf", "#Lambda_{b}#rightarrow (p^{+}#pi^{-})(K^{-}#pi^{+})");
+  pc_pdf_sig_pkpipi.setSolidFill(kViolet+1);
+
+  PlotComponent pc_pdf_sig_ppipipi( "pdf:bkg_pdf,part_reco_pdf,lb2pkpipi_mc_pdf,lb2ppipipi_mc_pdf", "#Lambda_{b}#rightarrow (p^{+}#pi^{-})(#pi^{-}#pi^{+})");
+  pc_pdf_sig_ppipipi.setSolidFill(kBlue-7);
+
+  plotComps.push_back(pc_data);
+  plotComps.push_back(pc_pdf_sig);
+  plotComps.push_back(pc_pdf_sig_bd);
+  plotComps.push_back(pc_pdf_sig_phikst);
+  plotComps.push_back(pc_pdf_sig_rhokst);
+  plotComps.push_back(pc_pdf_sig_bsphikst);
+  plotComps.push_back(pc_pdf_sig_pkpipi);
+  plotComps.push_back(pc_pdf_sig_ppipipi);
+  plotComps.push_back(pc_pdf_part_reco);
+  plotComps.push_back(pc_pdf_bkg);
+  plotComps.push_back(pc_pdf);
+  plotComps.push_back(pc_data_invis);
+
+  // set up yield list
+  w->var("bkg_y")->SetTitle("N_{comb.}");
+  w->var("part_reco_y")->SetTitle("N_{part. rec.}");
+  w->var("bs2kstkst_y")->SetTitle("N_{B_{s}#rightarrow(K^{+}#pi^{-})(K#pi)}");
+  w->var("bd2kstkst_y")->SetTitle("N_{B_{d}#rightarrow(K^{+}#pi^{-})(K#pi)}");
+  w->var("bd2rhokst_y")->SetTitle("N_{B_{d}#rightarrow(K#pi)(#pi#pi)}");
+  w->var("bd2phikst_y")->SetTitle("N_{B_{d}#rightarrow(K#pi)(KK)}");
+  w->var("bs2phikst_y")->SetTitle("N_{B_{s}#rightarrow(K#pi)(KK)}");
+  w->var("lb2pkpipi_y")->SetTitle("N_{#Lambda_{b}#rightarrow(p#pi)(K#pi)}");
+  w->var("lb2ppipipi_y")->SetTitle("N_{#Lambda_{b}#rightarrow(p#pi)(#pi#pi)}");
+
+  RooArgList *ordered_params = new RooArgList();
+  ordered_params->add( *w->var("bkg_y") );
+  ordered_params->add( *w->var("part_reco_y") );
+  ordered_params->add( *w->var("bd2kstkst_y") );
+  ordered_params->add( *w->var("bd2rhokst_y") );
+  ordered_params->add( *w->var("bd2phikst_y") );
+  ordered_params->add( *w->var("bs2phikst_y") );
+  ordered_params->add( *w->var("lb2pkpipi_y") );
+  ordered_params->add( *w->var("lb2ppipipi_y") );
+  ordered_params->add( *w->var("bs2kstkst_y") );
+
+  setTitle("InvariantMassFit");
+  setDrawLog(true);
+  setResidType(2);
+  setPBoxX(0.23);
+
+  plot("B_s0_DTF_B_s0_M", plotComps, "fullfit_solid", ordered_params);
 
 }
 

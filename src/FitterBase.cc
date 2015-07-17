@@ -715,7 +715,7 @@ void FitterBase::plot(TString var, vector<PlotComponent> plotComps, TString fnam
       lineErr.DrawLine(plot->GetXaxis()->GetXmin(),2.,plot->GetXaxis()->GetXmax(),2.);
       lineErr.DrawLine(plot->GetXaxis()->GetXmin(),-2.,plot->GetXaxis()->GetXmax(),-2.);
     }
-    //underHist->Draw("APsame");
+    underHist->Draw("Psame");
   }
 
   canv->Update();
@@ -758,6 +758,7 @@ void FitterBase::plot(TString var, vector<PlotComponent> plotComps, TString fnam
         lineErr.DrawLine(plot->GetXaxis()->GetXmin(),2.,plot->GetXaxis()->GetXmax(),2.);
         lineErr.DrawLine(plot->GetXaxis()->GetXmin(),-2.,plot->GetXaxis()->GetXmax(),-2.);
       }
+      underHist->Draw("Psame");
     }
     canvLog->Update();
     canvLog->Modified();

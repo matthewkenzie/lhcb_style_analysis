@@ -60,7 +60,9 @@ PlotComponent::PlotComponent(TString _name, TString _title):
   fcolor(0),
   fstyle(0),
   binning(-1),
-  doption("L")
+  doption("L"),
+  invisible(false),
+  noleg(false)
 {}
 
 PlotComponent::PlotComponent(TString _name, TString _title, int _lcolor):
@@ -74,7 +76,9 @@ PlotComponent::PlotComponent(TString _name, TString _title, int _lcolor):
   fcolor(0),
   fstyle(0),
   binning(-1),
-  doption("L")
+  doption("L"),
+  invisible(false),
+  noleg(false)
 {}
 
 PlotComponent::PlotComponent(TString _name, TString _title, int _lcolor, int _lstyle):
@@ -88,7 +92,9 @@ PlotComponent::PlotComponent(TString _name, TString _title, int _lcolor, int _ls
   fcolor(0),
   fstyle(0),
   binning(-1),
-  doption("L")
+  doption("L"),
+  invisible(false),
+  noleg(false)
 {}
 
 void PlotComponent::plotOn(RooWorkspace *w, RooPlot *plot, TLegend *leg){
@@ -110,25 +116,29 @@ void PlotComponent::plotOn(RooWorkspace *w, RooPlot *plot, TLegend *leg){
   // check if dset
   if (w->data(name)) {
     if (mstyle > 0) {
-      w->data(name)->plotOn(plot,Binning(binning),LineColor(lcolor),MarkerColor(mcolor),MarkerStyle(mstyle));
+      if ( invisible ) w->data(name)->plotOn(plot,Binning(binning),LineColor(lcolor),MarkerColor(mcolor),MarkerStyle(mstyle),Invisible());
+      else             w->data(name)->plotOn(plot,Binning(binning),LineColor(lcolor),MarkerColor(mcolor),MarkerStyle(mstyle));
     }
     else {
-      w->data(name)->plotOn(plot,Binning(binning),LineColor(lcolor),MarkerColor(mcolor));
+      if ( invisible ) w->data(name)->plotOn(plot,Binning(binning),LineColor(lcolor),MarkerColor(mcolor),Invisible());
+      else             w->data(name)->plotOn(plot,Binning(binning),LineColor(lcolor),MarkerColor(mcolor));
     }
   }
 
   // check if pdf
   else if (w->pdf(main)) {
     if (name.Contains(":")) {
-      w->pdf(main)->plotOn(plot,Components(comp),LineColor(lcolor),LineStyle(lstyle),LineWidth(lwidth));
+      if ( invisible ) w->pdf(main)->plotOn(plot,Components(comp),LineColor(lcolor),LineStyle(lstyle),LineWidth(lwidth),FillColor(fcolor),FillStyle(fstyle),DrawOption(doption),Invisible());
+      else             w->pdf(main)->plotOn(plot,Components(comp),LineColor(lcolor),LineStyle(lstyle),LineWidth(lwidth),FillColor(fcolor),FillStyle(fstyle),DrawOption(doption));
     }
     else {
-      w->pdf(main)->plotOn(plot,LineColor(lcolor),LineStyle(lstyle),LineWidth(lwidth));
+      if ( invisible ) w->pdf(main)->plotOn(plot,LineColor(lcolor),LineStyle(lstyle),LineWidth(lwidth),FillColor(fcolor),FillStyle(fstyle),DrawOption(doption),Invisible());
+      else             w->pdf(main)->plotOn(plot,LineColor(lcolor),LineStyle(lstyle),LineWidth(lwidth),FillColor(fcolor),FillStyle(fstyle),DrawOption(doption));
     }
   }
 
   // add to legend if necessary
-  if (leg && (w->data(name) || w->pdf(main))) {
+  if (leg && !invisible && !noleg && (w->data(name) || w->pdf(main))) {
     TObject *legObj = (TObject*)plot->getObject(plot->numItems()-1);
     leg->AddEntry(legObj, title, doption);
   }
@@ -157,3 +167,11 @@ void PlotComponent::setSolidLine(int color){
   // the rest are already defaults
 }
 
+void PlotComponent::setSolidFill(int color){
+  lcolor = color;
+  lwidth = 3;
+  lstyle = 1;
+  fcolor = color;
+  fstyle = 1001;
+  doption = "LF";
+}

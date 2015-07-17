@@ -84,10 +84,13 @@ class PlotComponent {
     int fstyle;
     int binning;
     TString doption;
+    bool invisible;
+    bool noleg;
 
     void setDefaultDataStyle();
     void setDashedLine(int color);
     void setSolidLine(int color);
+    void setSolidFill(int color);
 
 };
 
