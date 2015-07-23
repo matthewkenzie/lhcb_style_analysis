@@ -1,3 +1,9 @@
+//
+// ratio of branching fractions:
+//  B (B_s -> phi Kst) / B (B0 -> phi Kst) = 0.113 +- 0.024 (stat) +- 0.013 (syst) +- 0.009 (fd/fs)
+//
+// in quadrature = 0.113 +- 0.0287
+
 #include "Bs2KstKst/InvariantMassFit.h"
 #include "roofit/RooExpAndGauss.h"
 #include "roofit/RooPhysBkg.h"
@@ -188,7 +194,7 @@ void Bs2KstKst::InvariantMassFit::makeDataPlot(){
   w->var("bd2kstkst_y")->SetTitle("N_{B_{d}#rightarrow(K#pi)(K#pi)}");
   w->var("bd2rhokst_y")->SetTitle("N_{B_{d}#rightarrow(K#pi)(#pi#pi)}");
   w->var("bd2phikst_y")->SetTitle("N_{B_{d}#rightarrow(K#pi)(KK)}");
-  w->var("bs2phikst_y")->SetTitle("N_{B_{s}#rightarrow(K#pi)(KK)}");
+  w->function("bs2phikst_y")->SetTitle("N_{B_{s}#rightarrow(K#pi)(KK)}");
   w->var("lb2pkpipi_y")->SetTitle("N_{#Lambda_{b}#rightarrow(p#pi)(K#pi)}");
   w->var("lb2ppipipi_y")->SetTitle("N_{#Lambda_{b}#rightarrow(p#pi)(#pi#pi)}");
 
@@ -198,7 +204,7 @@ void Bs2KstKst::InvariantMassFit::makeDataPlot(){
   ordered_params->add( *w->var("bd2kstkst_y") );
   ordered_params->add( *w->var("bd2rhokst_y") );
   ordered_params->add( *w->var("bd2phikst_y") );
-  ordered_params->add( *w->var("bs2phikst_y") );
+  ordered_params->add( *w->function("bs2phikst_y") );
   ordered_params->add( *w->var("lb2pkpipi_y") );
   ordered_params->add( *w->var("lb2ppipipi_y") );
   ordered_params->add( *w->var("bs2kstkst_y") );
@@ -277,7 +283,7 @@ void Bs2KstKst::InvariantMassFit::makeSolidDataPlot(){
   w->var("bd2kstkst_y")->SetTitle("N_{B_{d}#rightarrow(K#pi)(K#pi)}");
   w->var("bd2rhokst_y")->SetTitle("N_{B_{d}#rightarrow(K#pi)(#pi#pi)}");
   w->var("bd2phikst_y")->SetTitle("N_{B_{d}#rightarrow(K#pi)(KK)}");
-  w->var("bs2phikst_y")->SetTitle("N_{B_{s}#rightarrow(K#pi)(KK)}");
+  w->function("bs2phikst_y")->SetTitle("N_{B_{s}#rightarrow(K#pi)(KK)}");
   w->var("lb2pkpipi_y")->SetTitle("N_{#Lambda_{b}#rightarrow(p#pi)(K#pi)}");
   w->var("lb2ppipipi_y")->SetTitle("N_{#Lambda_{b}#rightarrow(p#pi)(#pi#pi)}");
 
@@ -287,7 +293,7 @@ void Bs2KstKst::InvariantMassFit::makeSolidDataPlot(){
   ordered_params->add( *w->var("bd2kstkst_y") );
   ordered_params->add( *w->var("bd2rhokst_y") );
   ordered_params->add( *w->var("bd2phikst_y") );
-  ordered_params->add( *w->var("bs2phikst_y") );
+  ordered_params->add( *w->function("bs2phikst_y") );
   ordered_params->add( *w->var("lb2pkpipi_y") );
   ordered_params->add( *w->var("lb2ppipipi_y") );
   ordered_params->add( *w->var("bs2kstkst_y") );
@@ -335,43 +341,16 @@ void Bs2KstKst::InvariantMassFit::Bd2PhiKstFit() {
   fit("bd2phikst_mc_pdf", "Bd2PhiKst");
   plot("B_s0_DTF_B_s0_M","Bd2PhiKst","bd2phikst_mc_pdf",2);
   freeze("bd2phikst_mc_pdf");
-  //w->var("bd2phikst_mean")->setConstant(false);
-  //w->var("bd2phikst_sigma1")->setConstant(false);
-  //w->var("bd2phikst_sigma2")->setConstant(false);
-  addConstraint("bd2phikst_mean");
-  //addConstraint("bd2phikst_sigma1");
-  //addConstraint("bd2phikst_sigma2");
+  //w->var("bd2phikst_mu")->setConstant(false);
+  //w->var("bd2phikst_sigma")->setConstant(false);
+
 }
 
 void Bs2KstKst::InvariantMassFit::Bs2PhiKstFit() {
   fit("bs2phikst_mc_pdf", "Bs2PhiKst");
   plot("B_s0_DTF_B_s0_M","Bs2PhiKst","bs2phikst_mc_pdf",2);
   freeze("bs2phikst_mc_pdf");
-  addConstraint("bs2phikst_mean");
-  // not fit to MC but taken from Bd2PhiKst
-  //w->var("bs2phikst_sigma1")->setVal(w->var("bd2phikst_sigma1")->getVal());
-  //w->var("bs2phikst_sigma2")->setVal(w->var("bd2phikst_sigma2")->getVal());
-  //w->var("bs2phikst_alpha1")->setVal(w->var("bd2phikst_alpha1")->getVal());
-  //w->var("bs2phikst_alpha2")->setVal(w->var("bd2phikst_alpha2")->getVal());
-  //w->var("bs2phikst_n1")->setVal(w->var("bd2phikst_n1")->getVal());
-  //w->var("bs2phikst_n2")->setVal(w->var("bd2phikst_n2")->getVal());
-  //w->var("bs2phikst_f1")->setVal(w->var("bd2phikst_f1")->getVal());
-  //w->var("bs2phikst_sigma1")->setError(w->var("bd2phikst_sigma1")->getError());
-  //w->var("bs2phikst_sigma2")->setError(w->var("bd2phikst_sigma2")->getError());
-  //w->var("bs2phikst_alpha1")->setError(w->var("bd2phikst_alpha1")->getError());
-  //w->var("bs2phikst_alpha2")->setError(w->var("bd2phikst_alpha2")->getError());
-  //w->var("bs2phikst_n1")->setError(w->var("bd2phikst_n1")->getError());
-  //w->var("bs2phikst_n2")->setError(w->var("bd2phikst_n2")->getError());
-  //w->var("bs2phikst_f1")->setError(w->var("bd2phikst_f1")->getError());
-  //double pdg_bs_mass = 5366.3;
-  //double pdg_bd_mass = 5279.53;
-  //double meas_bd_mass = w->var("bd2phikst_mean")->getVal();
-  //w->var("bs2phikst_mean")->setVal( pdg_bs_mass - (pdg_bd_mass-meas_bd_mass) );
-  //freeze("bs2phikst_mc_pdf");
-  //addConstraint("bs2phikst_mean",5314.69,20.);
-  //w->var("bs2phikst_mean")->setConstant(false);
-  //w->var("bs2phikst_sigma1")->setConstant(false);
-  //w->var("bs2phikst_sigma2")->setConstant(false);
+  //addConstraint("bs2phikst_mean");
 }
 
 void Bs2KstKst::InvariantMassFit::Bd2RhoKstFit() {
@@ -380,15 +359,6 @@ void Bs2KstKst::InvariantMassFit::Bd2RhoKstFit() {
   freeze("bd2rhokst_mc_pdf");
   //w->var("bd2rhokst_mu")->setConstant(false);
   //w->var("bd2rhokst_sigma")->setConstant(false);
-  w->var("bd2rhokst_mu")->setConstant(false);
-  w->var("bd2rhokst_sigma")->setConstant(false);
-  w->var("bd2rhokst_zeta")->setConstant(true);
-  w->var("bd2rhokst_fb")->setConstant(true);
-  //addConstraint("bd2rhokst_l");
-  //addConstraint("bd2rhokst_n");
-  //addConstraint("bd2rhokst_a");
-  //addConstraint("bd2rhokst_n2");
-  //addConstraint("bd2rhokst_a2");
 }
 
 void Bs2KstKst::InvariantMassFit::Lb2pKpipiFit() {
@@ -488,10 +458,24 @@ void Bs2KstKst::InvariantMassFit::makeBd2KstKstPdf() {
 // Bd2PhiKst MC
 void Bs2KstKst::InvariantMassFit::makeBd2PhiKstPdf() {
 
-  w->factory("bd2phikst_mean[5200,5270]");
-  w->factory("CBShape::bd2phikst_mc_cb1( B_s0_DTF_B_s0_M, bd2phikst_mean, bd2phikst_sigma1[100,0,400], bd2phikst_alpha1[0.5,0.,10..], bd2phikst_n1[0.01,0.,10.])");
-  w->factory("CBShape::bd2phikst_mc_cb2( B_s0_DTF_B_s0_M, bd2phikst_mean, bd2phikst_sigma2[100,0,400], bd2phikst_alpha2[-0.5,-10.,0.], bd2phikst_n2[0.1,0.,10.])");
-  w->factory("SUM::bd2phikst_mc_pdf( bd2phikst_f1[0.6,0.,1.]*bd2phikst_mc_cb1, bd2phikst_mc_cb2 )");
+  addParameter("bd2phikst_l"       ,-5    ,-40    ,0  );
+  addParameter("bd2phikst_zeta"    ,1.e-5             );
+  addParameter("bd2phikst_fb"      ,0.                );
+  addParameter("bd2phikst_sigma"   ,15    ,10     ,100);
+  addParameter("bd2phikst_mu"      ,5200  ,5270       );
+  addParameter("bd2phikst_a"       , 2.5  , 0     ,10 );
+  addParameter("bd2phikst_n"       , 2.5  , 0     ,40 );
+  addParameter("bd2phikst_a2"      , 2.5  , 0     ,10 );
+  addParameter("bd2phikst_n2"      , 2.5  , 0     ,10 );
+
+  w->var("bd2phikst_zeta")->setConstant(true);
+  w->var("bd2phikst_fb")->setConstant(true);
+
+  RooIpatia2 *pdf = new RooIpatia2("bd2phikst_mc_pdf","bd2phikst_mc_pdf",*w->var("B_s0_DTF_B_s0_M"),*w->var("bd2phikst_l"),*w->var("bd2phikst_zeta"),*w->var("bd2phikst_fb"),*w->var("bd2phikst_sigma"),*w->var("bd2phikst_mu"),*w->var("bd2phikst_a"),*w->var("bd2phikst_n"),*w->var("bd2phikst_a2"),*w->var("bd2phikst_n2"));
+
+  w->import(*pdf);
+  delete pdf;
+
   defineParamSet("bd2phikst_mc_pdf");
 }
 
@@ -571,8 +555,14 @@ void Bs2KstKst::InvariantMassFit::makeTotalPdf() {
   addParameter("part_reco_y",  0, 200e3);
   addParameter("bs2kstkst_y",   0, 20e3);
   addParameter("bd2kstkst_y",  0, 3000);
-  addParameter("bd2phikst_y",  0, 2000);
-  addParameter("bs2phikst_y",  0, 2000);
+  addParameter("bd2phikst_y",  0, 5000);
+  // add bs2phikst yield as constrained ratio
+  addParameter("yield_ratio_bsobd_phikst",  0, 1.);
+  addConstraint("yield_ratio_bsobd_phikst", 0.113, 0.0287);
+  // TODO
+  // temp solution with no uncert
+  w->factory("prod::bs2phikst_y( yield_ratio_bsobd_phikst, bd2phikst_y )");
+  //addParameter("bs2phikst_y",  0, 2000);
   addParameter("bd2rhokst_y",  0, 10e4);
   addParameter("lb2pkpipi_y",  0, 4000);
   addParameter("lb2ppipipi_y", 0, 4000);
@@ -583,7 +573,7 @@ void Bs2KstKst::InvariantMassFit::makeTotalPdf() {
   yields->add(*w->var("bs2kstkst_y"  ));
   yields->add(*w->var("bd2kstkst_y" ));
   yields->add(*w->var("bd2phikst_y" ));
-  yields->add(*w->var("bs2phikst_y" ));
+  yields->add(*w->function("bs2phikst_y" ));
   yields->add(*w->var("bd2rhokst_y" ));
   yields->add(*w->var("lb2pkpipi_y" ));
   yields->add(*w->var("lb2ppipipi_y"));

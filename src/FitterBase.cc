@@ -12,6 +12,8 @@
 #include "TGraphAsymmErrors.h"
 #include "TMath.h"
 #include "TPaveText.h"
+#include "TColor.h"
+#include "TBox.h"
 
 #include "RooDataSet.h"
 #include "RooArgSet.h"
@@ -71,6 +73,10 @@ FitterBase::~FitterBase(){
 }
 
 void FitterBase::loadCachedWorkspace(TString fname){
+
+  if ( verbose || debug ) {
+    print( "Loading cached workspace from file: "+fname );
+  }
   // get name of and then delete old workspace
   TString wsname = w->GetName();
   delete w;
@@ -80,6 +86,10 @@ void FitterBase::loadCachedWorkspace(TString fname){
 }
 
 void FitterBase::loadCachedData(TString fname) {
+
+  if ( verbose || debug ) {
+    print( "", "Loading cached data from file: "+fname );
+  }
 
   TString wsname = w->GetName();
   TFile *cacheFile = TFile::Open(fname);
@@ -570,11 +580,47 @@ void FitterBase::plot(TString var, TString data, TString pdf, int resid, TString
     lowerPad->SetBottomMargin(0.35);
     lowerPad->cd();
     underHist->Draw("AP");
+    if ( resid==2 ) { // pull hist
+      double ymin = underHist->GetYaxis()->GetXmin();
+      double ymax = underHist->GetYaxis()->GetXmax();
+      double yrange = Max( Abs( ymin ), Abs( ymax ) );
+      underHist->GetYaxis()->SetRangeUser( -1.*yrange, 1.*yrange );
+
+      double xmin = plot->GetXaxis()->GetXmin();
+      double xmax = plot->GetXaxis()->GetXmax();
+
+      TBox box3sig;
+      box3sig.SetFillColor( kGray );
+      box3sig.SetFillColorAlpha( kGray, 0.5 );
+      box3sig.SetFillStyle(1001);
+      box3sig.DrawBox( xmin, -3., xmax, 3.);
+      TBox box2sig;
+      box2sig.SetFillColor( kGray+1 );
+      box2sig.SetFillColorAlpha( kGray+1, 0.5 );
+      box2sig.SetFillStyle(1001);
+      box2sig.DrawBox( xmin, -2., xmax, 2.);
+      TBox box1sig;
+      box1sig.SetFillColor( kGray+2 );
+      box1sig.SetFillColorAlpha( kGray+2, 0.5 );
+      box1sig.SetFillStyle(1001);
+      box1sig.DrawBox( xmin, -1., xmax, 1.);
+
+      TLine lineErr;
+      lineErr.SetLineWidth(1);
+      lineErr.SetLineColor(kBlue-9);
+      lineErr.SetLineStyle(2);
+      lineErr.DrawLine(plot->GetXaxis()->GetXmin(),1.,plot->GetXaxis()->GetXmax(),1.);
+      lineErr.DrawLine(plot->GetXaxis()->GetXmin(),-1.,plot->GetXaxis()->GetXmax(),-1.);
+      lineErr.DrawLine(plot->GetXaxis()->GetXmin(),2.,plot->GetXaxis()->GetXmax(),2.);
+      lineErr.DrawLine(plot->GetXaxis()->GetXmin(),-2.,plot->GetXaxis()->GetXmax(),-2.);
+      lineErr.DrawLine(plot->GetXaxis()->GetXmin(),3.,plot->GetXaxis()->GetXmax(),3.);
+      lineErr.DrawLine(plot->GetXaxis()->GetXmin(),-3.,plot->GetXaxis()->GetXmax(),-3.);
+    }
     TLine line;
     line.SetLineWidth(3);
     line.SetLineColor(kBlue);
     line.DrawLine(plot->GetXaxis()->GetXmin(),0.,plot->GetXaxis()->GetXmax(),0.);
-    //underHist->Draw("APsame");
+    underHist->Draw("Psame");
   }
   canv->Update();
   canv->Modified();
@@ -701,20 +747,48 @@ void FitterBase::plot(TString var, vector<PlotComponent> plotComps, TString fnam
     lowerPad->SetBottomMargin(0.35);
     lowerPad->cd();
     underHist->Draw("AP");
+    // if pull plot
+    if (pResidType==2) {
+      double ymin = underHist->GetYaxis()->GetXmin();
+      double ymax = underHist->GetYaxis()->GetXmax();
+      double yrange = Max( Abs( ymin ), Abs( ymax ) );
+      underHist->GetYaxis()->SetRangeUser( -1.*yrange, 1.*yrange );
+
+      double xmin = plot->GetXaxis()->GetXmin();
+      double xmax = plot->GetXaxis()->GetXmax();
+
+      TBox box3sig;
+      box3sig.SetFillColor( kGray );
+      box3sig.SetFillColorAlpha( kGray, 0.5 );
+      box3sig.SetFillStyle(1001);
+      box3sig.DrawBox( xmin, -3., xmax, 3.);
+      TBox box2sig;
+      box2sig.SetFillColor( kGray+1 );
+      box2sig.SetFillColorAlpha( kGray+1, 0.5 );
+      box2sig.SetFillStyle(1001);
+      box2sig.DrawBox( xmin, -2., xmax, 2.);
+      TBox box1sig;
+      box1sig.SetFillColor( kGray+2 );
+      box1sig.SetFillColorAlpha( kGray+2, 0.5 );
+      box1sig.SetFillStyle(1001);
+      box1sig.DrawBox( xmin, -1., xmax, 1.);
+
+      TLine lineErr;
+      lineErr.SetLineWidth(1);
+      lineErr.SetLineColor(kBlue-9);
+      lineErr.SetLineStyle(2);
+      lineErr.DrawLine(plot->GetXaxis()->GetXmin(),1.,plot->GetXaxis()->GetXmax(),1.);
+      lineErr.DrawLine(plot->GetXaxis()->GetXmin(),-1.,plot->GetXaxis()->GetXmax(),-1.);
+      lineErr.DrawLine(plot->GetXaxis()->GetXmin(),2.,plot->GetXaxis()->GetXmax(),2.);
+      lineErr.DrawLine(plot->GetXaxis()->GetXmin(),-2.,plot->GetXaxis()->GetXmax(),-2.);
+      lineErr.DrawLine(plot->GetXaxis()->GetXmin(),3.,plot->GetXaxis()->GetXmax(),3.);
+      lineErr.DrawLine(plot->GetXaxis()->GetXmin(),-3.,plot->GetXaxis()->GetXmax(),-3.);
+    }
     // line at zero
     TLine line;
     line.SetLineWidth(3);
     line.SetLineColor(kBlue);
     line.DrawLine(plot->GetXaxis()->GetXmin(),0.,plot->GetXaxis()->GetXmax(),0.);
-    // lines at 2 sigma
-    if (pResidType==2) {
-      TLine lineErr;
-      lineErr.SetLineWidth(2);
-      lineErr.SetLineColor(kBlack);
-      lineErr.SetLineStyle(2);
-      lineErr.DrawLine(plot->GetXaxis()->GetXmin(),2.,plot->GetXaxis()->GetXmax(),2.);
-      lineErr.DrawLine(plot->GetXaxis()->GetXmin(),-2.,plot->GetXaxis()->GetXmax(),-2.);
-    }
     underHist->Draw("Psame");
   }
 
@@ -744,20 +818,48 @@ void FitterBase::plot(TString var, vector<PlotComponent> plotComps, TString fnam
       lowerPadLog->SetBottomMargin(0.35);
       lowerPadLog->cd();
       underHist->Draw("AP");
+      // if pull
+      if (pResidType==2) {
+        double ymin = underHist->GetYaxis()->GetXmin();
+        double ymax = underHist->GetYaxis()->GetXmax();
+        double yrange = Max( Abs( ymin ), Abs( ymax ) );
+        underHist->GetYaxis()->SetRangeUser( -1.*yrange, 1.*yrange );
+
+        double xmin = plot->GetXaxis()->GetXmin();
+        double xmax = plot->GetXaxis()->GetXmax();
+
+        TBox box3sig;
+        box3sig.SetFillColor( kGray );
+        box3sig.SetFillColorAlpha( kGray, 0.5 );
+        box3sig.SetFillStyle(1001);
+        box3sig.DrawBox( xmin, -3., xmax, 3.);
+        TBox box2sig;
+        box2sig.SetFillColor( kGray+1 );
+        box2sig.SetFillColorAlpha( kGray+1, 0.5 );
+        box2sig.SetFillStyle(1001);
+        box2sig.DrawBox( xmin, -2., xmax, 2.);
+        TBox box1sig;
+        box1sig.SetFillColor( kGray+2 );
+        box1sig.SetFillColorAlpha( kGray+2, 0.5 );
+        box1sig.SetFillStyle(1001);
+        box1sig.DrawBox( xmin, -1., xmax, 1.);
+
+        TLine lineErr;
+        lineErr.SetLineWidth(1);
+        lineErr.SetLineColor(kBlue-9);
+        lineErr.SetLineStyle(2);
+        lineErr.DrawLine(plot->GetXaxis()->GetXmin(),1.,plot->GetXaxis()->GetXmax(),1.);
+        lineErr.DrawLine(plot->GetXaxis()->GetXmin(),-1.,plot->GetXaxis()->GetXmax(),-1.);
+        lineErr.DrawLine(plot->GetXaxis()->GetXmin(),2.,plot->GetXaxis()->GetXmax(),2.);
+        lineErr.DrawLine(plot->GetXaxis()->GetXmin(),-2.,plot->GetXaxis()->GetXmax(),-2.);
+        lineErr.DrawLine(plot->GetXaxis()->GetXmin(),3.,plot->GetXaxis()->GetXmax(),3.);
+        lineErr.DrawLine(plot->GetXaxis()->GetXmin(),-3.,plot->GetXaxis()->GetXmax(),-3.);
+      }
       // line at zero
       TLine line;
       line.SetLineWidth(3);
       line.SetLineColor(kBlue);
       line.DrawLine(plot->GetXaxis()->GetXmin(),0.,plot->GetXaxis()->GetXmax(),0.);
-      // lines at 2 sigma
-      if (pResidType==2) {
-        TLine lineErr;
-        lineErr.SetLineWidth(2);
-        lineErr.SetLineColor(kBlack);
-        lineErr.SetLineStyle(2);
-        lineErr.DrawLine(plot->GetXaxis()->GetXmin(),2.,plot->GetXaxis()->GetXmax(),2.);
-        lineErr.DrawLine(plot->GetXaxis()->GetXmin(),-2.,plot->GetXaxis()->GetXmax(),-2.);
-      }
       underHist->Draw("Psame");
     }
     canvLog->Update();
@@ -808,6 +910,13 @@ void FitterBase::plot2D(TString xvar, TString yvar, TString obj) {
 void FitterBase::fit(TString pdf, TString data, bool constrained) {
 
   print("Fitting pdf: "+pdf+" to dataset: "+data);
+
+  if ( ! w->pdf(pdf) || ! w->data(data) ) {
+    if ( verbose || debug ) w->Print();
+    if ( ! w->pdf(pdf) ) cerr << "ERROR -- FitterBase::fit() -- pdf " << pdf.Data() << " not found in workspace" << endl;
+    if ( ! w->data(data) ) cerr << "ERROR -- FitterBase::fit() -- data " << data.Data() << " not found in workspace" << endl;
+  }
+
   if (w->pdf(pdf) && w->data(data)) {
     if ( constrained ){
       w->pdf(pdf)->fitTo(*w->data(data),Constrained());

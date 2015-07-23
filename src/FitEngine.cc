@@ -48,6 +48,7 @@ void FitEngine::run() {
   if ( arg.cached ) {
     if ( arg.cachedDataOnly ) {
       fitter->loadCachedData( arg.cachefile );
+      fitter->constructPdfs();
     }
     else {
       fitter->loadCachedWorkspace( arg.cachefile );
