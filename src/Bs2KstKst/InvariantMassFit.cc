@@ -126,8 +126,22 @@ void Bs2KstKst::InvariantMassFit::run(){
 }
 
 void Bs2KstKst::InvariantMassFit::makePlots(){
+  //makeInitialFitPlots();
   makeDataPlot();
   makeSolidDataPlot();
+  makeSWeightPlots();
+}
+
+void Bs2KstKst::InvariantMassFit::makeInitialFitPlots() {
+  plot("B_s0_DTF_B_s0_M","Bd2KstKst","bd2kstkst_mc_pdf",2);
+  plot("B_s0_DTF_B_s0_M","Bs2KstKst","bs2kstkst_mc_pdf",2);
+  plot("B_s0_DTF_B_s0_M","Bd2PhiKst","bd2phikst_mc_pdf",2);
+  plot("B_s0_DTF_B_s0_M","Bs2PhiKst","bs2phikst_mc_pdf",2);
+  plot("B_s0_DTF_B_s0_M","Bd2RhoKst","bd2rhokst_mc_pdf",2);
+  plot("B_s0_DTF_B_s0_M","Lb2pKpipi","lb2pkpipi_mc_pdf",2);
+  plot("B_s0_DTF_B_s0_M","Lb2ppipipi","lb2ppipipi_mc_pdf",2);
+  plot("B_s0_DTF_B_s0_M","Lb2ppipipi","lb2ppipipi_mc_pdf",2);
+  plot("B_s0_DTF_B_s0_M","Data","constrained_pdf",2);
 }
 
 void Bs2KstKst::InvariantMassFit::makeDataPlot(){
@@ -305,6 +319,52 @@ void Bs2KstKst::InvariantMassFit::makeSolidDataPlot(){
 
   plot("B_s0_DTF_B_s0_M", plotComps, "fullfit_solid", ordered_params);
 
+}
+
+void Bs2KstKst::InvariantMassFit::makeSWeightPlots() {
+
+  // set up plot stuff
+  w->var("B_s0_DTF_KST1_M")->setBins(40);
+  w->var("B_s0_DTF_KST2_M")->setBins(40);
+  w->var("B_s0_DTF_B_s0_CosTheta1")->setBins(40);
+  w->var("B_s0_DTF_B_s0_CosTheta2")->setBins(40);
+  w->var("B_s0_DTF_B_s0_Phi1")->setBins(40);
+  w->var("B_s0_DTF_TAU")->setRange(0.,10.);
+  w->var("B_s0_DTF_TAU")->setBins(40);
+  w->var("B_s0_DTF_TAUERR")->setRange(0.,0.08);
+  w->var("B_s0_DTF_TAUERR")->setBins(40);
+  w->var("B_s0_SS_nnetKaon_DEC")->setRange(-1.5,1.5);
+  w->var("B_s0_SS_nnetKaon_DEC")->setBins(3);
+  w->var("B_s0_SS_nnetKaon_PROB")->setRange(0.,0.5);
+  w->var("B_s0_SS_nnetKaon_PROB")->setBins(40);
+  w->var("B_s0_TAGDECISION_OS")->setRange(-1.5,1.5);
+  w->var("B_s0_TAGDECISION_OS")->setBins(3);
+  w->var("B_s0_TAGOMEGA_OS")->setRange(0.,0.5);
+  w->var("B_s0_TAGOMEGA_OS")->setBins(40);
+
+  plot( "B_s0_DTF_B_s0_CosTheta1", "Data_wsweights_proj_bs2kstkst_y" , "", 0, "", false);
+  plot( "B_s0_DTF_B_s0_CosTheta2", "Data_wsweights_proj_bs2kstkst_y" , "", 0, "", false);
+  plot( "B_s0_DTF_B_s0_Phi1",      "Data_wsweights_proj_bs2kstkst_y" , "", 0, "", false);
+  plot( "B_s0_DTF_KST1_M",         "Data_wsweights_proj_bs2kstkst_y" , "", 0, "", false);
+  plot( "B_s0_DTF_KST2_M",         "Data_wsweights_proj_bs2kstkst_y" , "", 0, "", false);
+
+  plotMultiCanv( 5, "sweighted_proj_1" );
+
+  plot( "B_s0_DTF_TAU",            "Data_wsweights_proj_bs2kstkst_y" , "", 0, "", false);
+  plot( "B_s0_TAGDECISION_OS",     "Data_wsweights_proj_bs2kstkst_y" , "", 0, "", false);
+  plot( "B_s0_SS_nnetKaon_DEC",    "Data_wsweights_proj_bs2kstkst_y" , "", 0, "", false);
+  plot( "B_s0_DTF_TAUERR",         "Data_wsweights_proj_bs2kstkst_y" , "", 0, "", false);
+  plot( "B_s0_TAGOMEGA_OS",        "Data_wsweights_proj_bs2kstkst_y" , "", 0, "", false);
+  plot( "B_s0_SS_nnetKaon_PROB",   "Data_wsweights_proj_bs2kstkst_y" , "", 0, "", false);
+
+  plotMultiCanv( 6, "sweighted_proj_2" );
+
+  plot2D( "B_s0_DTF_KST1_M", "B_s0_DTF_KST2_M", "Data_wsweights_proj_bs2kstkst_y" );
+  plot2D( "B_s0_DTF_KST1_M", "B_s0_DTF_KST2_M", "Data" );
+  plot2D( "B_s0_DTF_KST1_M", "B_s0_DTF_KST2_M", "Bs2KstKst"           );
+  plot2D( "B_s0_DTF_KST1_M", "B_s0_DTF_KST2_M", "Bs2KstKst1430"       );
+  plot2D( "B_s0_DTF_KST1_M", "B_s0_DTF_KST2_M", "Bs2Kst1430Kst1430"   );
+  plot2D( "B_s0_DTF_KST1_M", "B_s0_DTF_KST2_M", "Bs2KpiKpiPhaseSpace" );
 }
 
 void Bs2KstKst::InvariantMassFit::Bs2KstKstFit() {

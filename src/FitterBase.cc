@@ -6,6 +6,7 @@
 #include "TAxis.h"
 #include "TLegend.h"
 #include "TROOT.h"
+#include "TStyle.h"
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TLine.h"
@@ -53,6 +54,7 @@ FitterBase::FitterBase(TString wsname, TString name, bool _verbose, bool _debug)
     RooMsgService::instance().setSilentMode(true);
   }
   gROOT->ProcessLine(".x /Users/matt/Scratch/lhcb/lhcbStyle.C");
+  gStyle->SetPalette(1);
 	w = new RooWorkspace(wsname);
 	RooArgSet *observables = new RooArgSet();
 	w->defineSet("observables",*observables);
@@ -508,7 +510,33 @@ TCanvas* FitterBase::createCanvas(int canv_w, int canv_h){
   return c;
 }
 
-void FitterBase::plot(TString var, TString data, TString pdf, int resid, TString title){
+// make multiple canvas plot
+void FitterBase::plotMultiCanv( int n, TString name, int canv_w, int canv_h ) {
+
+  int ncanvs = canvs.size();
+  if ( ncanvs < n ) {
+    cerr << "ERROR -- FitterBase::plotMultiCanv() -- there aren't enough canvases to multiplot " << n << " of them" << endl;
+    exit(1);
+  }
+
+  TCanvas *canv = createCanvas(canv_w, canv_h);
+  canv->DivideSquare(n);
+
+  int iCanv=1;
+  for (int i=ncanvs-n; i<ncanvs; i++) {
+    canv->cd(iCanv);
+    canvs[i]->DrawClonePad();
+    iCanv++;
+  }
+  canv->Update();
+  canv->Modified();
+
+  canv->Print(Form("plots/%s/pdf/%s.pdf",fitterName.Data(),name.Data()));
+  canv->Print(Form("plots/%s/png/%s.png",fitterName.Data(),name.Data()));
+  canv->Print(Form("plots/%s/C/%s.C",    fitterName.Data(),name.Data()));
+}
+
+void FitterBase::plot(TString var, TString data, TString pdf, int resid, TString title, bool drawLeg){
 
   w->pdf(pdf) ?
     print("Plotting data: "+data+" and pdf: "+pdf+" in variable: "+var) :
@@ -547,7 +575,7 @@ void FitterBase::plot(TString var, TString data, TString pdf, int resid, TString
     canv = createCanvas();
     canv->SetBottomMargin(0.2);
     plot->Draw();
-    leg->Draw("same");
+    if (drawLeg) leg->Draw("same");
     if ( title != "" ) text->Draw("same");
   }
   else {
@@ -573,7 +601,7 @@ void FitterBase::plot(TString var, TString data, TString pdf, int resid, TString
     upperPad->SetBottomMargin(0.1);
     upperPad->cd();
     plot->Draw();
-    leg->Draw("same");
+    if (drawLeg) leg->Draw("same");
     if ( title != "" ) text->Draw("same");
     canv->cd();
     lowerPad->SetTopMargin(0.05);
@@ -885,22 +913,51 @@ void FitterBase::plot(TString var, vector<PlotComponent> plotComps, TString fnam
 void FitterBase::plot2D(TString xvar, TString yvar, TString obj) {
 
   // create histogram
-  w->var(xvar)->setBins(50);
-  w->var(yvar)->setBins(50);
-  TH2F* th2 = w->var(xvar)->createHistogram(Form("th2_%s_vs_%s",xvar.Data(),yvar.Data()),*w->var(yvar));
+  TH2F* th2 = w->var(xvar)->createHistogram(Form("th2_%s_vs_%s_%s",xvar.Data(),yvar.Data(),obj.Data()),*w->var(yvar));
 
-  TCanvas *canv = createCanvas();
+  // style
+  TColor *mycol = gROOT->GetColor( kGray+3 );
+  mycol->SetAlpha(0.4);
+  th2->SetLineColor( mycol->GetNumber() );
+  th2->SetLineWidth(1);
+  th2->GetYaxis()->SetNdivisions( th2->GetXaxis()->GetNdivisions() );
 
+  TCanvas *canv = createCanvas(1600,600);
+  canv->Divide(2,1);
+
+  canv->cd(1);
+  gPad->SetPhi(40);
+  gPad->SetTheta(30);
+  gPad->SetTopMargin(0.01);
+  gPad->SetRightMargin(0.05);
+  gPad->SetBottomMargin(0.2);
+
+  //
+  // Draw lego style
   // check for data first
+  //
   if (w->data(obj)) {
     w->data(obj)->fillHistogram(th2,RooArgSet(*w->var(xvar),*w->var(yvar)));
-    th2->Draw("LEGO2");
+    th2->Draw("lego2fbbb");
   }
   if (w->pdf(obj)) {
     w->pdf(obj)->fillHistogram(th2,RooArgSet(*w->var(xvar),*w->var(yvar)));
     th2->Draw("SURF2");
   }
-  TString fname = Form("th2_%s_vs_%s",xvar.Data(),yvar.Data());
+
+  canv->cd(2);
+  gPad->SetRightMargin(0.15);
+  gPad->SetLeftMargin(0.18);
+
+  TH2F* th2_flat = (TH2F*)th2->Clone(Form("%s_flat",th2->GetName()));
+  th2_flat->GetXaxis()->SetTitleOffset(0.8);
+  th2_flat->GetYaxis()->SetTitleOffset(1.);
+  th2_flat->Draw("colz");
+
+  canv->Update();
+  canv->Modified();
+  //
+  TString fname = Form("th2_%s_vs_%s_%s",xvar.Data(),yvar.Data(),obj.Data());
   canv->Print(Form("plots/%s/C/%s.C",    fitterName.Data(),fname.Data()));
   canv->Print(Form("plots/%s/pdf/%s.pdf",    fitterName.Data(),fname.Data()));
   canv->Print(Form("plots/%s/png/%s.png",    fitterName.Data(),fname.Data()));

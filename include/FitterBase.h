@@ -111,7 +111,9 @@ class FitterBase {
 
     TCanvas* createCanvas(int canv_w=800, int canv_h=600);
 
-    void plot(TString var, TString data, TString pdf="", int resid=0, TString title=""); // resid==0 (no resid), ==1 (resid hist), ==2 (pull hist)
+    void plotMultiCanv( int n, TString name, int canv_w=800, int canv_h=600 );
+
+    void plot(TString var, TString data, TString pdf="", int resid=0, TString title="", bool drawLeg=true); // resid==0 (no resid), ==1 (resid hist), ==2 (pull hist)
     void plot(TString var, std::vector<PlotComponent> plotComps, TString fname, const RooArgList *params=NULL);
     void plot2D(TString xvar, TString yvar, TString obj);
 

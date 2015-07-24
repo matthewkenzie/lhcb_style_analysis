@@ -22,8 +22,10 @@ namespace Bs2KstKst {
 
     private:
 
+      void makeInitialFitPlots();
       void makeDataPlot();
       void makeSolidDataPlot();
+      void makeSWeightPlots();
 
       void Bs2KstKstFit();
       void Bd2KstKstFit();
