@@ -5,7 +5,8 @@ parser = OptionParser()
 parser.add_option("-t","--title",default="",help="Title")
 parser.add_option("-w","--width",default=300,help="Plot width")
 parser.add_option("-p","--plotsPerLine",type="int",default=-1,help="Plots to display per line")
-parser.add_option("-C","--colorScheme",default="maroon",help="html color (as string) for borders etc.")
+parser.add_option("-c","--colorScheme",default="maroon",help="html color (as string) for borders etc.")
+parser.add_option("-u","--upload",default=None, help='Upload location on afs web server')
 (opts,args) = parser.parse_args()
 
 import os
@@ -141,6 +142,7 @@ directories = gatherDirectories('plots')
 # home page
 writeHtml( 'plots', 'Home', directories, {}, True )
 
+# subdir pages
 for directory in directories:
 
   name = os.path.basename( directory )
@@ -150,5 +152,15 @@ for directory in directories:
 
   writeHtml( directory, name, directories, plots )
 
+if opts.upload:
+
+  print 'Will upload to the following afs location: %s '%opts.upload
+
+  uname = raw_input('Enter username@lxplus.cern.ch\n')
+
+  exec_line = 'scp -r plots/* %s@lxplus.cern.ch:%s/'%(uname,opts.upload)
+  print exec_line
+
+  os.system( exec_line )
 
 
