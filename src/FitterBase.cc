@@ -617,19 +617,26 @@ void FitterBase::plot(TString var, TString data, TString pdf, int resid, TString
       double xmin = plot->GetXaxis()->GetXmin();
       double xmax = plot->GetXaxis()->GetXmax();
 
+      TColor *mycol3sig = gROOT->GetColor( kGray );
+      mycol3sig->SetAlpha(0.5);
+      TColor *mycol2sig = gROOT->GetColor( kGray+1 );
+      mycol2sig->SetAlpha(0.5);
+      TColor *mycol1sig = gROOT->GetColor( kGray+2 );
+      mycol1sig->SetAlpha(0.5);
+
       TBox box3sig;
-      box3sig.SetFillColor( kGray );
-      box3sig.SetFillColorAlpha( kGray, 0.5 );
+      box3sig.SetFillColor( mycol3sig->GetNumber() );
+      //box3sig.SetFillColorAlpha( kGray, 0.5 );
       box3sig.SetFillStyle(1001);
       box3sig.DrawBox( xmin, -3., xmax, 3.);
       TBox box2sig;
-      box2sig.SetFillColor( kGray+1 );
-      box2sig.SetFillColorAlpha( kGray+1, 0.5 );
+      box2sig.SetFillColor( mycol2sig->GetNumber() );
+      //box2sig.SetFillColorAlpha( kGray+1, 0.5 );
       box2sig.SetFillStyle(1001);
       box2sig.DrawBox( xmin, -2., xmax, 2.);
       TBox box1sig;
-      box1sig.SetFillColor( kGray+2 );
-      box1sig.SetFillColorAlpha( kGray+2, 0.5 );
+      box1sig.SetFillColor( mycol1sig->GetNumber() );
+      //box1sig.SetFillColorAlpha( kGray+2, 0.5 );
       box1sig.SetFillStyle(1001);
       box1sig.DrawBox( xmin, -1., xmax, 1.);
 
