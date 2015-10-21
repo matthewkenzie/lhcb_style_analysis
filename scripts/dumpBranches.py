@@ -1,7 +1,9 @@
+#!/usr/bin/env python
+
 import ROOT as r
 
-tf = r.TFile('test_files/Bs2Kst0Kst0_wide_MC2011_magDown_Bs2K0st0K0st0_13104042_Job1569.root')
-tree = tf.Get('Bs2Kst0Kst0/DecayTree')
+tf = r.TFile('nTuples/Bc2Dmunu/D0_favoured_data.root')
+tree = tf.Get('Jpsi_Tuple/DecayTree')
 
 f1 = open('tmp/headerstuff.h','w')
 f2 = open('tmp/srcstuff.cc','w')
